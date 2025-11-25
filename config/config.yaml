@@ -1,0 +1,20 @@
+experiment:
+  iterations: 5
+  output_dir: "experiments"
+  save_artifacts: true
+
+models:
+  text_model: "google/gemini-1.5-flash"
+  vision_model: "google/gemini-1.5-flash"
+  
+  # Alternatives (Uncomment to use):
+  # text_model: "openai/gpt-4o-mini"
+  # vision_model: "openai/gpt-4o-mini"
+  
+  # text_model: "mistralai/pixtral-12b"
+  # vision_model: "mistralai/pixtral-12b"
+  embedding_type: "siglip" # Options: "siglip", "titan"
+  embedding_model: "google/siglip-so400m-patch14-384"
+
+mermaid:
+  executable_path: "npx" # Assumes npx is in PATH

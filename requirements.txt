@@ -1,0 +1,11 @@
+openai
+sentence-transformers
+numpy
+matplotlib
+pillow
+pyyaml
+requests
+python-dotenv
+boto3
+sentencepiece
+protobuf

@@ -1,0 +1,15 @@
+# Environments
+env/
+.env
+.venv/
+venv/
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+
+# Project Artifacts
+metrics.json
+*.log
+experiments/
