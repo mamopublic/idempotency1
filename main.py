@@ -1,8 +1,10 @@
 import argparse
 import os
-from src.config_loader import load_config, load_prompts
+from src.config_loader import load_config
 from src.experiment import ExperimentRunner
 from src.batch import BatchRunner
+from src.post_process import ExperimentAnalyzer
+from src.visualization import plot_dashboard
 
 def main():
     parser = argparse.ArgumentParser(description="Idempotency Experiment Runner")
@@ -17,18 +19,24 @@ def main():
     # Load Config
     try:
         config = load_config(args.config)
-        prompts = load_prompts(args.prompts)
     except Exception as e:
         print(f"Error loading configuration: {e}")
         return
 
     # Run
     if args.batch:
-        runner = BatchRunner(config, prompts)
+        runner = BatchRunner(config)
         runner.run_batch(args.batch)
     elif args.prompt:
-        runner = ExperimentRunner(config, prompts)
-        runner.run(args.prompt, experiment_name=args.name)
+        runner = ExperimentRunner(config)
+        exp_dir = runner.run(args.prompt, experiment_name=args.name)
+        
+        # Post-Processing Analysis
+        analyzer = ExperimentAnalyzer(config)
+        analyzer.analyze(exp_dir)
+        
+        # Visualization
+        plot_dashboard(exp_dir)
     else:
         print("Error: Must provide either --prompt or --batch")
         parser.print_help()

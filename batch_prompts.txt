@@ -1,0 +1,4 @@
+A simple e-commerce system with a User, a Shopping Cart, and a Product Catalog. The User adds items to the Cart from the Catalog.
+A 3-tier web application architecture with a Load Balancer, a Web Server cluster, and a Database.
+A machine learning pipeline with Data Ingestion, Preprocessing, Model Training, and Model Evaluation steps.
+A user authentication flow where a User logs in, the System verifies credentials against a Database, and returns a Token.

@@ -1,11 +1,15 @@
 experiment:
-  iterations: 5
+  iterations: 10
   output_dir: "experiments"
   save_artifacts: true
 
 models:
-  text_model: "google/gemini-1.5-flash"
-  vision_model: "google/gemini-1.5-flash"
+  generation_params:
+    text_temperature: 0.1 # Low temp for deterministic code generation
+    vision_temperature: 0.7 # Higher temp for creative/varied description
+    
+  text_model: "google/gemini-2.0-flash-001"
+  vision_model: "google/gemini-2.0-flash-001"
   
   # Alternatives (Uncomment to use):
   # text_model: "openai/gpt-4o-mini"
@@ -18,3 +22,37 @@ models:
 
 mermaid:
   executable_path: "npx" # Assumes npx is in PATH
+
+system_prompts:
+  diagram_generation: |
+    You are an expert software architect and Mermaid.js specialist.
+    Your task is to generate a valid Mermaid.js diagram based on the user's description.
+    
+    RULES:
+    1. Return ONLY the Mermaid code. No markdown code blocks (```mermaid), no explanations, no preamble.
+    2. The code must be syntactically correct and renderable.
+    3. Use the 'graph TD' or 'flowchart TD' type unless specified otherwise.
+    4. Use clear, descriptive node labels.
+    5. Style the nodes to look professional (e.g., using 'classDef').
+    6. Do NOT use reserved keywords (like 'end', 'subgraph', 'click') as class names. Use 'endNode' instead of 'end'.
+
+  vision_extraction: |
+    You are an expert system analyst.
+    Your task is to analyze the provided architecture diagram and write a detailed textual prompt that describes it.
+    
+    RULES:
+    1. The output should be a prompt that, if fed to an architect, would result in this exact diagram.
+    2. Describe every node, connection, and label.
+    3. Capture the logical flow and hierarchy.
+    4. Do NOT mention that you are looking at a diagram or image. Just describe the system.
+    5. Be precise and concise.
+
+costs:
+  # Rates per 1M tokens (USD)
+  google/gemini-2.0-flash-001:
+    input: 0.10
+    output: 0.40
+  # Add other models as needed
+  openai/gpt-4o-mini:
+    input: 0.15
+    output: 0.60

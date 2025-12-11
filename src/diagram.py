@@ -17,22 +17,33 @@ class MermaidGenerator:
         try:
             # Run mmdc (Mermaid CLI)
             # npx -y @mermaid-js/mermaid-cli -i input.mmd -o output.png
-            cmd = [
-                self.executable, "-y", "@mermaid-js/mermaid-cli",
-                "-i", tmp_path,
-                "-o", output_path,
-                "-b", "transparent" # Optional: transparent background
-            ]
+            # Check for local mmdc
+            local_mmdc = os.path.join(os.getcwd(), "node_modules", ".bin", "mmdc")
+            if os.path.exists(local_mmdc):
+                cmd = [
+                    local_mmdc,
+                    "-i", tmp_path,
+                    "-o", output_path,
+                    "-b", "transparent"
+                ]
+            else:
+                # Fallback to npx
+                cmd = [
+                    self.executable, "-y", "@mermaid-js/mermaid-cli",
+                    "-i", tmp_path,
+                    "-o", output_path,
+                    "-b", "transparent"
+                ]
             
             # On Windows, shell=True is often needed for npx to resolve correctly
             # Added timeout to prevent hanging
             result = subprocess.run(
                 cmd, 
                 check=False, 
-                shell=True, 
+                shell=False, 
                 stdout=subprocess.PIPE, 
                 stderr=subprocess.PIPE,
-                timeout=60 # 60 seconds timeout
+                timeout=120 # 120 seconds timeout
             )
             
             if result.returncode != 0:

@@ -104,3 +104,9 @@ class SimilarityEngine:
         emb_text = self.model.encode_text(text)
         emb_image = self.model.encode_image(image_path)
         return self.model.compute_similarity(emb_text, emb_image)
+
+    def compute_visual_similarity(self, image_path1, image_path2):
+        """Computes similarity between two images."""
+        emb1 = self.model.encode_image(image_path1)
+        emb2 = self.model.encode_image(image_path2)
+        return self.model.compute_similarity(emb1, emb2)

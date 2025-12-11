@@ -1,11 +1,21 @@
+# Core
 openai
-sentence-transformers
-numpy
-matplotlib
-pillow
-pyyaml
 requests
 python-dotenv
-boto3
+pyyaml
+numpy
+
+# Visualization
+matplotlib
+seaborn
+pillow
+
+# ML / Embeddings
+transformers
+torch
+sentence-transformers
 sentencepiece
 protobuf
+
+# Optional / Cloud
+boto3
