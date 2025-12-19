@@ -1,0 +1,53 @@
+# --- 3x3x3 Scientific Matrix (27 Prompts) ---
+# Format: Complexity > Domain > Variation
+
+# === 1. SIMPLE (Linear) ===
+
+# Software
+A simple user authentication flow. User inputs credentials, System validates hash, returns Token or Error.
+A password reset flow. User requests reset, System sends Email, User clicks Link, enters New Password.
+An email subscription process. User submits email, System adds to DB, System sends Welcome Email.
+
+# Physical
+A gravity-fed water filtration system. Rainwater to Gutter, Gutter to Pipe, Pipe to Filter, Filter to Tank.
+A manufacturing assembly line. Raw material enters Conveyor, Stamping Machine shapes it, Painting Station colors it, Packaging wraps it.
+A traffic light sequence. Green light stays for 60s, turns Yellow for 5s, turns Red for 60s.
+
+# Abstract
+A logical syllogism chain. Premise A implies B. B implies C. Therefore A implies C.
+A historical timeline of 3 events. Event A causes Event B. Event B triggers Reaction C.
+An algebraic derivation. Start with Equation 1, substitute Variable X, simplify to Result Y.
+
+# === 2. CYCLIC (Feedback) ===
+
+# Software
+A CI/CD pipeline with rollback. Commit -> Test. Fail? Notify Dev (Loop). Pass? Deploy. Monitor Health. bad? Rollback (Loop).
+An event sourcing loop. User Action -> Event Bus -> Consumer updates View DB. View reflects new state to User.
+A garbage collection mark-and-sweep. Scanner traces roots, marks reachable, sweeps unreachable, frees memory, waits for next cycle.
+
+# Physical
+A home thermostat. Sensor reads Temp. If Low, Heater On. Temp Rises. If High, Heater Off. Temp Falls.
+The hydrological water cycle. Ocean water Evaporates into Clouds. Clouds Condense into Rain. Rain flows into Rivers. Rivers return to Ocean.
+An engine combustion cycle. Intake valve opens, Piston moves down. Valve closes, Piston compresses. Spark plug fires (Combustion). Piston driven down. Exhaust valve opens.
+
+# Abstract
+The Hero's Journey. Ordinary World -> Call to Adventure -> Ordeal -> Reward -> Return to Ordinary World (Changed).
+ The Scientific Method. Observe -> Hypothesize -> Experiment -> Analyze. Data supports? Theory. Data rejects? New Hypothesis (Loop).
+The Design Thinking process. Empathize -> Define -> Ideate -> Prototype -> Test. Test fails? Ideate again (Loop).
+
+# === 3. HIERARCHICAL (Nested) ===
+
+# Software
+E-commerce Microservices. API Gateway routes to Product Service (Product DB), Order Service (Order DB), User Service (User DB).
+A Kubernetes Cluster Architecture. Control Plane manages Nodes. Nodes contain Pods. Pods contain Containers.
+A React Component Tree. App Component holds Header, Main, Footer. Main holds Sidebar and Content Area. Content Area holds Article List.
+
+# Physical
+The Solar System. Sun at center. Inner Planets (Mercury, Venus, Earth) orbit Sun. Earth has Moon. Outer Planets (Jupiter, Saturn) orbit Sun. Jupiter has many Moons.
+A Biological Trophic Pyramid. Producers (Plants) at base. Primary Consumers (Herbivores) eat Producers. Secondary Consumers (Carnivores) eat Primary. Decomposers recycle all.
+Human Nervous System. Central NS (Brain, Spine). Peripheral NS splits into Somatic and Autonomic. Autonomic splits into Sympathetic and Parasympathetic.
+
+# Abstract
+A Biological Taxonomy. Domain Eukarya -> Kingdom Animalia -> Phylum Chordata -> Class Mammalia.
+A Corporate Org Chart. CEO leads VP Eng, VP Sales, VP HR. VP Eng leads Backend, Frontend, QA Teams.
+A Decision Tree for Loan Approval. Credit Score > 700? Yes -> Income > 50k? Yes -> Approve. No -> Deny.

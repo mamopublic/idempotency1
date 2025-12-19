@@ -1,69 +1,81 @@
-# Project Overview
+# Methodology & Architecture
 
-This project implements an **Idempotency Experiment Runner** that tests the stability of generative AI models when converting Text to Diagrams and back to Text.
+## Experimental Methodology
 
-## Core Logic: The Feedback Loop
+The Idempotency Experiment operates on a cyclic feedback loop designed to isolate the stability properties of Generative AI models. Unlike standard evaluation benchmarks which test "correctness" against a ground truth, this framework tests **self-consistency** (or idempotency) over time.
 
-The core functionality is encapsulated in the `ExperimentRunner` class (`src/experiment.py`). It executes a cycle of generation and extraction to measure information loss or drift over multiple iterations.
+### The Feedback Loop (The "Iterated Function System")
 
-### The Loop
-For a given number of iterations (controlled by `config.yaml`):
+The experiment is modeled as an Iterated Function System (IFS) where the state $S_t$ at iteration $t$ transforms into $S_{t+1}$ through four distinct phases:
 
-1.  **Text-to-Diagram**:
-    *   **Input**: A text prompt (e.g., "A simple e-commerce system architecture").
-    *   **Process**: An LLM (via OpenRouter) generates Mermaid.js code representing this system.
-    *   **Output**: `.mmd` file.
+1.  **Codification ($f_{code}$)**: **Text $\to$ Code**
+    *   **Input**: Natural language architectural description.
+    *   **Transformation**: An LLM (e.g., Gemini 2.0 Flash) converts the ambiguous text description into strict, formal syntax (Mermaid.js).
+    *   **Constraint**: The syntax requirements act as a "rigid body" constraint, forcing the model to make specific structural decisions.
 
-2.  **Rendering**:
-    *   **Input**: `.mmd` file.
-    *   **Process**: The `MermaidGenerator` uses the local `mmdc` CLI tool to render the diagram.
-    *   **Output**: `.png` image.
+2.  **Manifestation ($f_{render}$)**: **Code $\to$ Image**
+    *   **Input**: Mermaid source code (`.mmd`).
+    *   **Transformation**: Deterministic rendering via `mermaid-cli` (`mmdc`) to a PNG image.
+    *   **Role**: This step is purely deterministic; it serves as the "grounding" of the abstract code into visual reality.
 
-3.  **Vision-to-Text**:
-    *   **Input**: `.png` image.
-    *   **Process**: A Vision-Language Model (VLM) views the image and extracts a text description of the system architecture.
-    *   **Output**: A new text prompt.
+3.  **Observation ($f_{vision}$)**: **Image $\to$ Text**
+    *   **Input**: The rendered PNG diagram.
+    *   **Transformation**: A Vision-Language Model (VLM) observes the image and describes the architecture it sees.
+    *   **Entropy**: This is the primary source of entropy (or "semantic drift"). The VLM must interpret the visual signs back into concepts, often adding or losing detail based on `vision_temperature`.
 
-4.  **Loop**:
-    *   This extracted text becomes the **Input** for the next iteration.
+4.  **Iteration**: The output text becomes the input for $t+1$.
 
-## Analysis & Metrics
+$$ S_{t+1} = f_{vision}(f_{render}(f_{code}(S_t))) $$
 
-The project uses a **decoupled architecture**:
-1.  **Generation Phase**: Runs the loop and saves raw data to `trajectory.json`.
-2.  **Analysis Phase**: Processes the trajectory to compute global similarity matrices (simultaneously comparing all iterations against all others).
+### Metrics & Measurement
 
-### Metrics Matrices
-The analysis (`src/post_process.py`) produces `metrics.json` containing:
+To quantify stability, we define a distance metric $d(S_i, S_j)$ in a high-dimensional semantic vector space.
 
-*   **Text Matrix**:
-    *   *Method*: Character-level similarity (`difflib`).
-    *   *Description*: A square matrix where cell `[i][j]` is the text similarity between Prompt *i* and Prompt *j*.
+*   **Semantic Stability**: The cosine similarity between the embeddings of the prompt at iteration $t$ and $t-1$.
+    *   Embedding Model: **SigLIP** (So400m) or **Amazon Titan**.
+    *   $Score = \frac{E_t \cdot E_{t-1}}{\|E_t\| \|E_{t-1}\|}$
+*   **Visual Convergence**: The consine similarity between the image embeddings of the rendered diagram at $t$ and $t-1$.
+*   **Cross-Modal Alignment**: The similarity between the text embedding $T_t$ and the image embedding $I_t$, measuring how well the visual output represents the textual intent.
 
-*   **Semantic Matrix**:
-    *   *Method*: Text Embeddings (SigLIP/Titan) + Cosine Similarity.
-    *   *Description*: A square matrix measuring conceptual similarity between all pairs of prompts.
+## Theoretical Framework
 
-*   **Visual Matrix**:
-    *   *Method*: Image Embeddings (SigLIP/Titan) + Cosine Similarity.
-    *   *Description*: A square matrix measuring visual similarity between all pairs of generated images. Cell `[0][0]` is typically 0 if no initial image exists.
+### Attractor Dynamics
+We hypothesize that for a given concept (e.g., "Load Balancer"), there exists a **basin of attraction** in the model's latent space.
+*   **Strong Attractor**: Regardless of initial phrasing, the system rapidly converges to a specific canonical diagram (e.g., a specific box-and-arrow arrangement) and stays there.
+*   **Limit Cycles**: The system oscillates between two or three approximately stable states.
+*   **Chaos**: The system drifts endlessly, constantly adding or hallucinating new components without stabilizing.
 
-## Architecture
+### Information Compression
+The loop acts as a lossy compression algorithm. Details that are not "salient" enough to survive the Vision $\to$ Text translation are stripped away. We aim to identify the **irreducible kernel** of information that survives repeated cycling.
 
-*   **`main.py`**: Entry point. Runs experiment generation then triggers post-processing.
-*   **`src/experiment.py`**: Orchestrates the generative loop. Saves `trajectory.json` and images.
-*   **`src/post_process.py`**: Loads a completed experiment and computes similarity matrices.
-*   **`src/llm.py`**: Handles Interactions with OpenRouter API (Text and Vision models).
-*   **`src/diagram.py`**: A wrapper around the `mmdc` tool for rendering images.
-*   **`src/analysis.py`**: Logic for embedding models and computing similarity scores (Text, Image, Visual).
-*   **`src/batch.py`**: Logic for running multiple experiments from a file.
-*   **`src/config_loader.py`**: Utilities for reading YAML configuration.
+## System Architecture
 
-## Configuration & Tuning
+The codebase is organized to support robust, uninterruptible experimentation.
 
-The behavior of the generative models is controlled via `config.yaml`.
+### Core Modules (`src/`)
 
-*   **`text_temperature`** (Default: `0.1`): Controls the randomness of the Code Generation step.
-    *   *Rationale*: Set this **low** because generating formal syntax (Mermaid.js) requires precision. High temperatures increase the risk of invalid syntax or hallucinated formatting.
-*   **`vision_temperature`** (Default: `0.7`): Controls the randomness of the Vision Extraction step.
-    *   *Rationale*: Set this **higher** because describing an image is a creative task. A very low temperature (0.0) can lead to terse, repetitive descriptions. A bit of randomness encourages richer, more natural prompts for the subsequent iteration.
+*   **`experiment.py` (The Controller)**:
+    *   Orchestrates the $N$-step loop.
+    *   Maintains the "Trajectory" (the time-series history of all artifacts).
+    *   **Self-Healing**: Wraps the rendering step in a retry loop. If `mermaid-cli` fails (syntax error), it feeds the error message *back* to an LLM agent (`fix_diagram_code`) to repair the code before proceeding.
+*   **`llm.py` (The Agent)**:
+    *   Abstracts provider interactions (OpenRouter/OpenAI).
+    *   implements the temperature controls specific to each phase (low temp for code, variable temp for vision).
+*   **`analysis/` (The Observer)**:
+    *   **`similarity.py`**: Hosts the embedding engines. Supports pluggable backends (Local HuggingFace SigLIP vs. Remote AWS Titan) depending on compute availability.
+    *   **`convergence.py`**: Calculates the stability matrices and detects convergence events (e.g., "Stopped changing at Step 14").
+*   **`batch.py` (The Scaler)**:
+    *   Manages concurrent or sequential execution of multiple prompt trajectories.
+    *   Aggregates results into the unified scientific PDF report.
+
+### Directory Structure
+
+```
+├── main.py               # CLI Entry Point
+├── config/
+│   ├── config.yaml       # Experiment Parameters (Iterations, Models, Costs)
+│   └── prompts/          # Batch Prompt Sets (The "Dataset")
+├── experiments/          # Output Artifacts (Reports, Graphs, JSON Data)
+├── src/                  # Core Python Logic
+└── tools/                # Specialized Research Scripts (Sweeps, Dry Runs)
+```

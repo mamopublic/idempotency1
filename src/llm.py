@@ -1,6 +1,7 @@
 import os
 import base64
 import requests
+import re
 from openai import OpenAI
 
 class OpenRouterClient:
@@ -47,6 +48,14 @@ class OpenRouterClient:
             content = content.split("```mermaid")[1].split("```")[0].strip()
         elif "```" in content:
             content = content.split("```")[1].split("```")[0].strip()
+        
+        # Post-process: Fix common LLM syntax errors
+        # Issue: GPT-4o-mini sometimes generates empty edge labels: -->|""|  
+        # Fix: Remove empty labels, convert to plain arrow
+        content = re.sub(r'-->\|""\|', '-->', content)  # Empty double quotes
+        content = re.sub(r"-->\|''\|", '-->', content)  # Empty single quotes
+        content = re.sub(r'-->\|\|', '-->', content)     # Completely empty
+        
         return content, usage_dict
 
     def extract_prompt_from_image(self, image_path, system_prompt):
@@ -80,23 +89,40 @@ class OpenRouterClient:
         
         return response.choices[0].message.content, usage_dict
 
-    def fix_diagram_code(self, original_code, error_message):
-        """Attempts to fix Mermaid code that failed to render."""
+    def fix_diagram_code(self, original_code, error_message, override_model=None):
+        """Attempts to fix broken Mermaid code using LLM feedback.
+        Args:
+            original_code: The Mermaid code that failed to render
+            error_message: The error message from the renderer
+            override_model: Optional model override (e.g., for rescue model)
+        Returns: (fixed_code, usage)
+        """
         
         system_prompt = (
             "You are a Mermaid.js debugging expert. "
-            "Your task is to fix the provided Mermaid code which failed to render."
+            "Your task is to fix the provided Mermaid code which failed to render. "
+            "Common issues: semicolons in node definitions, invalid characters in node IDs, "
+            "incorrect classDef syntax, missing quotes around labels with special characters."
         )
         
         user_content = (
             f"The following Mermaid code failed to render.\n"
             f"Error Message: {error_message}\n\n"
             f"Code:\n```mermaid\n{original_code}\n```\n\n"
-            "FIX IT. Return ONLY the corrected Mermaid code. No explanations."
+            "CRITICAL RULES:\n"
+            "1. Remove semicolons from node definitions (e.g., 'A[Label];' should be 'A[Label]')\n"
+            "2. Use only alphanumeric characters and underscores in node IDs\n"
+            "3. Quote labels with special characters: A[\"Label (with parens)\"]\n"
+            "4. Ensure classDef syntax is correct: classDef className fill:#color\n"
+            "5. Edge labels must be non-empty: Use 'A --> B' (no label) or 'A -->|\"Label\"| B', NEVER '-->|\"\"|'\n"
+            "6. Return ONLY the corrected Mermaid code. No explanations, no markdown blocks."
         )
         
+        # Use override model if provided (for rescue), otherwise use default text model
+        model_to_use = override_model if override_model else self.text_model
+        
         response = self.client.chat.completions.create(
-            model=self.text_model,
+            model=model_to_use,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}

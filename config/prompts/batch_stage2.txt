@@ -1,0 +1,25 @@
+# --- 3x3 Scientific Matrix: Complexity vs Domain ---
+
+# 1. SIMPLE (Linear/Sequential)
+# Software
+A simple user authentication flow. The User enters credentials, the System validates them against a Database. If valid, return a Token; if invalid, return an Error.
+# Physical
+A gravity-fed water filtration system. Rainwater is collected in a Roof Gutter, flows down a Pipe into a Mesh Filter, then settles in a Sediment Tank, and finally passes to a Clean Water Cistern.
+# Abstract
+A logical syllogism chain. Premise A leads to Deduction B. Premise C modifies Deduction B to create Conclusion D. Conclusion D implies Consequence E.
+
+# 2. CYCLIC (Feedback Loops)
+# Software
+A CI/CD pipeline with auto-rollback. Developer creates a Commit. CI Server runs Tests. If Tests fail, notify Developer (Loop). If Tests pass, Deploy to Staging. If Staging Healthcheck fails, Rollback (Loop).
+# Physical
+A home thermostat feedback loop. The Sensor measures Room Temp. If Temp < Target, turn on Heater. Heater warms Room. Sensor detects rising Temp. If Temp > Target, turn off Heater.
+# Abstract
+The Hero's Journey narrative cycle. Hero starts in Ordinary World, receives Call to Adventure, crosses Threshold, faces Ordeal, gains Reward, and returns to Ordinary World changed.
+
+# 3. HIERARCHICAL (Nested/Branching)
+# Software
+A microservices architecture for an E-commerce platform. The API Gateway routes requests to three services: Product Service (connects to Product DB), Order Service (connects to Order DB), and User Service (connects to User DB).
+# Physical
+The Solar System hierarchy. The Sun is at the center. Inner Planets (Mercury, Venus, Earth, Mars) orbit closely. Earth has one Moon. Outer Planets (Jupiter, Saturn) orbit further out. Jupiter has multiple Moons.
+# Abstract
+A corporate organizational chart. The CEO oversees three departments: Engineering (CTO), Sales (VP Sales), and HR (VP HR). Engineering splits into Backend and Frontend teams. Sales splits into Regional and Enterprise teams.

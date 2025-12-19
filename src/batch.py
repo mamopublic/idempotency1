@@ -4,7 +4,7 @@ from datetime import datetime
 from .experiment import ExperimentRunner
 from .post_process import ExperimentAnalyzer
 from .visualization import plot_dashboard
-from .batch_visualization import plot_batch_dashboard
+from src.analysis.convergence import plot_batch_dashboard
 from .batch_reporting import generate_batch_report
 
 class BatchRunner:
@@ -12,7 +12,7 @@ class BatchRunner:
         self.config = config
         self.runner = ExperimentRunner(config)
 
-    def run_batch(self, batch_file):
+    def run_batch(self, batch_file, output_dir=None):
         """Runs experiments for each prompt in the batch file."""
         if not os.path.exists(batch_file):
             print(f"Batch file not found: {batch_file}")
@@ -26,17 +26,22 @@ class BatchRunner:
                     prompts = data
                 else:
                     f.seek(0)
-                    prompts = [line.strip() for line in f if line.strip()]
+                    prompts = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
             except json.JSONDecodeError:
                 f.seek(0)
-                prompts = [line.strip() for line in f if line.strip()]
+                prompts = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
 
         print(f"Found {len(prompts)} prompts in batch.")
         
         # Create Batch Output Directory
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        batch_dir = os.path.join(self.config["experiment"]["output_dir"], f"batch_{timestamp}")
-        os.makedirs(batch_dir, exist_ok=True)
+        if output_dir:
+            batch_dir = output_dir
+            os.makedirs(batch_dir, exist_ok=True)
+        else:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            batch_dir = os.path.join(self.config["experiment"]["output_dir"], f"batch_{timestamp}")
+            os.makedirs(batch_dir, exist_ok=True)
+            
         print(f"Batch Output Directory: {batch_dir}")
         
         results = []

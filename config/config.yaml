@@ -1,5 +1,5 @@
 experiment:
-  iterations: 10
+  iterations: 30
   output_dir: "experiments"
   save_artifacts: true
 
@@ -8,15 +8,26 @@ models:
     text_temperature: 0.1 # Low temp for deterministic code generation
     vision_temperature: 0.7 # Higher temp for creative/varied description
     
-  text_model: "google/gemini-2.0-flash-001"
+  # Text Model: GPT-4o-mini for Mermaid generation
+  # DeepSeek R1 was too slow (crawls during generation)
+  text_model: "openai/gpt-4o-mini"
+  # text_model: "deepseek/deepseek-r1-0528-qwen3-8b"  # Too slow
+  
+  # Vision Model: Gemini Flash is sufficient for diagram description
   vision_model: "google/gemini-2.0-flash-001"
   
-  # Alternatives (Uncomment to use):
-  # text_model: "openai/gpt-4o-mini"
-  # vision_model: "openai/gpt-4o-mini"
+  # Rescue Model: Fallback when primary model fails after max retries
+  # Used only for failed rendering fixes (3 attempts), then returns to primary
+  rescue_model: "openai/gpt-4o"
+  rescue_retries: 3
   
-  # text_model: "mistralai/pixtral-12b"
+  # Alternatives:
+  # text_model: "openai/gpt-4o-mini"  # Struggled with Mermaid syntax (empty edge labels)
+  # text_model: "google/gemini-2.0-flash-001"  # Economical but weaker code gen
+  # vision_model: "openai/gpt-4o-mini"
+  # text_model: "mistralai/pixtral-12b"  # Vision-focused, not ideal for code
   # vision_model: "mistralai/pixtral-12b"
+  
   embedding_type: "siglip" # Options: "siglip", "titan"
   embedding_model: "google/siglip-so400m-patch14-384"
 
@@ -52,7 +63,14 @@ costs:
   google/gemini-2.0-flash-001:
     input: 0.10
     output: 0.40
-  # Add other models as needed
   openai/gpt-4o-mini:
     input: 0.15
     output: 0.60
+  openai/gpt-4o:
+    input: 2.50
+    output: 10.00
+  deepseek/deepseek-r1-qwen-8b:
+    input: 0.14
+    output: 0.28
+  # Other models (for reference):
+  # qwen/qwen-2.5-72b-instruct: ~$0.35/$0.40 (strong reasoning)

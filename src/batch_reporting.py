@@ -119,13 +119,16 @@ def generate_batch_report(batch_dir, config):
     # Dashboards
     lines.append("### Visualizations")
     lines.append("#### Semantic Analysis")
-    lines.append("![Semantic Dashboard](batch_dashboard_semantic.png)")
+    lines.append("![Semantic Dashboard](batch_dashboard_p1_semantic.png)")
     lines.append("")
     lines.append("#### Visual Analysis")
-    lines.append("![Visual Dashboard](batch_dashboard_visual.png)")
+    lines.append("![Visual Dashboard](batch_dashboard_p1_visual.png)")
     lines.append("")
     lines.append("#### Embedding Distances")
-    lines.append("![Distances Dashboard](batch_dashboard_distances.png)")
+    lines.append("![Distances Dashboard](batch_dashboard_p1_distances.png)")
+    lines.append("")
+    lines.append("#### Trajectory Analysis")
+    lines.append("![Trajectory Dashboard](batch_dashboard_p1_trajectory.png)")
     lines.append("")
 
     # 3. Individual Experiment Summary
@@ -170,9 +173,10 @@ def generate_batch_report(batch_dir, config):
     try:
         # Check if npx is available
         if shutil.which("npx"):
-            cmd = ["npx", "-y", "md-to-pdf", report_path]
+            cmd = ["npx", "-y", "md-to-pdf", "batch_report.md"]
             result = subprocess.run(
                 cmd, 
+                cwd=batch_dir,
                 check=False, 
                 shell=False,
                 stdout=subprocess.PIPE, 

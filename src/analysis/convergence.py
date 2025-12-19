@@ -108,12 +108,12 @@ def plot_batch_dashboard(batch_dir):
 
     # Semantic Dashboard
     fig_sem = create_figure("Semantic", sem_evo, sem_conv, sem_fl)
-    fig_sem.savefig(os.path.join(batch_dir, "batch_dashboard_semantic.png"))
+    fig_sem.savefig(os.path.join(batch_dir, "batch_dashboard_p1_semantic.png"))
     plt.close(fig_sem)
     
     # Visual Dashboard
     fig_vis = create_figure("Visual", vis_evo, vis_conv, vis_fl)
-    fig_vis.savefig(os.path.join(batch_dir, "batch_dashboard_visual.png"))
+    fig_vis.savefig(os.path.join(batch_dir, "batch_dashboard_p1_visual.png"))
     plt.close(fig_vis)
     
     # Distances Dashboard
@@ -157,7 +157,63 @@ def plot_batch_dashboard(batch_dir):
     
     fig_dist.suptitle("Embedding Distances Analysis")
     plt.tight_layout()
-    fig_dist.savefig(os.path.join(batch_dir, "batch_dashboard_distances.png"))
+    fig_dist.savefig(os.path.join(batch_dir, "batch_dashboard_p1_distances.png"))
     plt.close(fig_dist)
+    
+    # Trajectory Plot (2D Embedding Space)
+    fig_traj, axes = plt.subplots(1, 2, figsize=(16, 7))
+    
+    # 1. Semantic Trajectory (Semantic Sim vs Iteration)
+    ax = axes[0]
+    for i, d in enumerate(data):
+        # Extract semantic similarity to initial prompt over time
+        if "semantic_matrix" in d and d["semantic_matrix"]:
+            matrix = np.array(d["semantic_matrix"])
+            # Similarity of each iteration to iteration 0
+            traj = matrix[0, :]  # Row 0 = similarities to initial
+            iterations = range(len(traj))
+            
+            # Plot with markers at start/end
+            ax.plot(iterations, traj, marker='o', markersize=3, alpha=0.7, label=run_names[i])
+            ax.scatter([0], [traj[0]], s=100, marker='s', edgecolors='black', linewidths=2, zorder=5)  # Start
+            ax.scatter([len(traj)-1], [traj[-1]], s=100, marker='*', edgecolors='black', linewidths=2, zorder=5)  # End
+    
+    ax.set_title("Semantic Trajectory\n(Similarity to Initial Prompt)")
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("Semantic Similarity")
+    ax.set_ylim(0, 1.1)
+    ax.legend(fontsize=8, loc='best')
+    ax.grid(True, alpha=0.3)
+    
+    # 2. 2D Phase Space (Semantic vs Visual Stability)
+    ax = axes[1]
+    for i, d in enumerate(data):
+        # Extract final 10 iterations for stability analysis
+        if "semantic_matrix" in d and "visual_matrix" in d:
+            sem_matrix = np.array(d["semantic_matrix"])
+            vis_matrix = np.array(d["visual_matrix"])
+            
+            n = len(sem_matrix)
+            if n > 10:
+                # Last 10 iterations
+                sem_vals = [sem_matrix[0, j] for j in range(n-10, n)]  # Sim to initial
+                vis_vals = [vis_matrix[1, j] for j in range(max(1, n-10), n)]  # Sim to first image
+                
+                # Plot trajectory
+                ax.plot(sem_vals, vis_vals, marker='o', markersize=4, alpha=0.6, label=run_names[i])
+                ax.scatter([sem_vals[0]], [vis_vals[0]], s=100, marker='s', edgecolors='black', linewidths=2, zorder=5)
+                ax.scatter([sem_vals[-1]], [vis_vals[-1]], s=100, marker='*', edgecolors='black', linewidths=2, zorder=5)
+    
+    ax.set_title("Phase Space (Last 10 Iterations)\n■ = Start, ★ = End")
+    ax.set_xlabel("Semantic Similarity (to Initial)")
+    ax.set_ylabel("Visual Similarity (to First Image)")
+    ax.set_xlim(0, 1.1)
+    ax.set_ylim(0, 1.1)
+    ax.legend(fontsize=8, loc='best')
+    ax.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    fig_traj.savefig(os.path.join(batch_dir, "batch_dashboard_p1_trajectory.png"), dpi=150)
+    plt.close(fig_traj)
     
     print(f"Batch dashboards saved to {batch_dir}")

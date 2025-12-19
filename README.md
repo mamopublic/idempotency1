@@ -1,32 +1,34 @@
-# Idempotency Experiment Runner
+# Idempotency 1: Generative Stability Experiment
 
-A robust, self-healing framework for running iterative generative AI experiments. It tests the stability ("idempotency") of LLM-generated artifacts (Mermaid diagrams) by cycling them through a **Description -> Code -> Render -> Description** loop and measuring semantic and visual convergence over time.
+> **Status**: Active Research Phase
+> **Focus**: Information Theory, Generative Stability, Attractor Dynamics
 
-## Key Features
+## Abstract
 
-- **🔄 Batch Processing**: Run multiple prompts in parallel with isolated environments.
-- **🛡️ Self-Healing Generation**: Automatically detects Mermaid rendering errors (syntax issues, timeouts) and uses an LLM-based feedback loop to fix the code on the fly.
-- **📊 Comprehensive Reporting**: Generates detailed **Markdown** and **PDF** reports for each batch, including:
-    - Aggregate statistics (Convergence speed, Stability scores, Cost).
-    - Embedded visualizations (Semantic evolution, Visual convergence).
-    - Detailed logs of every experiment.
-- **💰 Cost Approximation**: Tracks token usage and estimates costs based on configurable model pricing.
-- **📉 Advanced Metrics**: Analytics for **Semantic** (text embedding), **Visual** (image embedding), and **Cross-Modal** similarity.
+Idempotency 1 is an experimental framework designed to investigate the **stability of information** in iterative generative loops. By cycling semantic concepts through multiple modalities—**Text Description $\to$ Code Structure $\to$ Visual Rendering $\to$ Text Description**—we aim to quantify information loss, semantic drift, and the emergence of stable "attractor" states in Large Multimodal Models (LMMs).
 
-## Setup
+This project treats the generative loop as a **dynamical system**, asking whether rigorous architectural diagrams converge to a stable fixed point (idempotency) or diverge into chaos (semantic collapse) when subjected to repeated lossy compression/decompression by AI models.
+
+## Key Research Questions
+
+1.  **Attractor Dynamics**: Do initial prompts converge to specific, stable architectural patterns ("basins of attraction"), regardless of minor phrasing variations?
+2.  **Semantic Drift**: How does the creativity temperature of the Vision-Language Model affect the rate of information decay?
+3.  **Self-Correction**: Can a feedback loop with strict syntax constraints (Mermaid.js) act as a forcing function to stabilize "hallucinated" details?
+
+## Getting Started
 
 ### Prerequisites
 - **Python 3.10+**
-- **Node.js & npm** (Required for Mermaid rendering)
+- **Node.js & npm** (Required for Mermaid rendering interaction)
 
 ### Installation
 
-1.  **Clone & Install Python Deps**:
+1.  **Clone & Install Python Dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
 
-2.  **Install Node Deps**:
+2.  **Install Node Dependencies**:
     ```bash
     npm install
     ```
@@ -40,60 +42,36 @@ A robust, self-healing framework for running iterative generative AI experiments
 
 ## Usage
 
-### 1. Batch Mode (Recommended)
-Run a suite of experiments defined in a file (line-separated prompts or JSON list).
+### 1. Batch Experiments (Recommended)
+Run a suite of experiments defined in the prompts configuration. This is the primary method for gathering statistical data.
 
 ```bash
-python main.py --batch batch_prompts.txt
+python main.py --batch config/prompts/batch_prompts.txt
 ```
 
-**Output**: Creates a timestamped folder in `experiments/` (e.g., `experiments/batch_20251208_185012/`) containing:
-- `batch_report.pdf` & `batch_report.md`: The full scientific report.
-- `batch_dashboard_*.png`: Aggregate visualizations.
-- `prompt_X/`: Subfolders for individual experiment data (`trajectory.json`, images).
+**Output**: Creates a structured dataset in `experiments/` containing:
+- **Scientific Report**: `batch_report.pdf` (Convergence rates, Stability scores).
+- **Visualizations**: `batch_dashboard_*.png` (Semantic evolution graphs).
+- **Raw Data**: `trajectory.json` (Full text/image history for every iteration).
 
-### 2. Single Experiment
-Run a quick test for a single prompt.
+### 2. Single Probe
+Run a quick probe for a single concept to test a hypothesis.
 
 ```bash
-python main.py --prompt "A distributed payment gateway architecture" --name "payment_test"
+# Probing the stability of a "Microservices Payment System" concept
+python main.py --prompt "A distributed payment gateway architecture with sharded databases" --name "payment_probe_1"
 ```
 
-## Configuration (`config/config.yaml`)
+## Research Tools
 
-Control every aspect of the experiment via `config/config.yaml`.
+The repository includes specialized tools for performing controlled experiments:
 
-### Experiment Settings
-```yaml
-experiment:
-  iterations: 10          # Number of cycles per prompt
-  output_dir: "experiments"
-```
+- **Hyperparameter Sweeps**: Vary models and temperatures to test sensitivity.
+    - `python tools/run_sweep.py`
+- **Dry Run**: Verify the pipeline integrity before long-running experiments.
+    - `python tools/run_dry_run.py`
 
-### Models & Parameters
-```yaml
-models:
-  text_model: "google/gemini-2.0-flash-001"
-  vision_model: "google/gemini-2.0-flash-001"
-  generation_params:
-    text_temperature: 0.1   # Keep low for code stability
-    vision_temperature: 0.7 # Higher for descriptive variety
-  embedding_model: "google/siglip-so400m-patch14-384" # or Titan
-```
+## Documentation & Roadmap
 
-### Cost Tracking
-Define rates per 1M tokens to estimate spend.
-```yaml
-costs:
-  google/gemini-2.0-flash-001:
-    input: 0.10
-    output: 0.40
-```
-
-## Architecture
-
-*   **`src/experiment.py`**: Core logic. Manages the loop and the **retry/repair** mechanism.
-*   **`src/batch.py`**: Orchestrates parallel/sequential runs and triggers reporting.
-*   **`src/llm.py`**: Handles OpenRouter API calls and the `fix_diagram_code` agent.
-*   **`src/diagram.py`**: Wrapper for the Mermaid CLI renderer.
-*   **`src/analysis.py`**: Embeddings engine (SigLIP/Titan) and similarity math.
+- **[Methodology & Architecture](docs/project_overview.md)**: Deep dive into the experimental loop, metric definitions (SigLIP/Titan embeddings), and system architecture.
+- **[Research Roadmap](RESEARCH_TODO.md)**: Open questions, planned experiments (Temperature Studies, Information Bottleneck), and publication goals.

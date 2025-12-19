@@ -13,6 +13,9 @@ def main():
     parser.add_argument("--config", type=str, default="config/config.yaml", help="Path to config file")
     parser.add_argument("--prompts", type=str, default="config/prompts.yaml", help="Path to prompts file")
     parser.add_argument("--name", type=str, help="Name for the experiment (optional)")
+    parser.add_argument("--text-temp", type=float, help="Override text model temperature")
+    parser.add_argument("--vision-temp", type=float, help="Override vision model temperature")
+    parser.add_argument("--output-dir", type=str, help="Override output directory for batch run")
     
     args = parser.parse_args()
     
@@ -23,13 +26,24 @@ def main():
         print(f"Error loading configuration: {e}")
         return
 
+    # Apply Overrides
+    if args.text_temp is not None:
+        if 'models' not in config: config['models'] = {}
+        if 'generation_params' not in config['models']: config['models']['generation_params'] = {}
+        config['models']['generation_params']['text_temperature'] = args.text_temp
+        
+    if args.vision_temp is not None:
+        if 'models' not in config: config['models'] = {}
+        if 'generation_params' not in config['models']: config['models']['generation_params'] = {}
+        config['models']['generation_params']['vision_temperature'] = args.vision_temp
+
     # Run
     if args.batch:
         runner = BatchRunner(config)
-        runner.run_batch(args.batch)
+        runner.run_batch(args.batch, output_dir=args.output_dir)
     elif args.prompt:
         runner = ExperimentRunner(config)
-        exp_dir = runner.run(args.prompt, experiment_name=args.name)
+        exp_dir = runner.run(args.prompt, experiment_name=args.name, output_dir=args.output_dir)
         
         # Post-Processing Analysis
         analyzer = ExperimentAnalyzer(config)

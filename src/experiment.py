@@ -52,10 +52,12 @@ class ExperimentRunner:
             "image_path": None
         })
         
+        # Initialize cost tracker
         cost_tracker = {
-            "input_tokens": 0,
-            "output_tokens": 0,
-            "estimated_cost": 0.0
+            "total_tokens": 0,
+            "total_cost": 0.0,
+            "rescue_tokens": 0,
+            "rescue_cost": 0.0
         }
         
         print(f"Starting experiment: {experiment_name}")
@@ -84,9 +86,12 @@ class ExperimentRunner:
             image_path = os.path.join(traj_dir, f"iter_{i}.png")
             
             render_success = False
-            max_retries = 3
+            max_retries = 5
             current_code = mermaid_code
+            rescue_model = self.config["models"].get("rescue_model")
+            rescue_retries = self.config["models"].get("rescue_retries", 3)
             
+            # Phase 1: Try with primary model
             for attempt in range(max_retries + 1):
                 try:
                     self.diagram_gen.render(current_code, image_path)
@@ -103,7 +108,7 @@ class ExperimentRunner:
                 except Exception as e:
                     print(f"  > Rendering failed (Attempt {attempt}/{max_retries}): {e}")
                     if attempt < max_retries:
-                        print("  > Attempting to fix code with LLM...")
+                        print("  > Attempting to fix code with primary LLM...")
                         try:
                             fixed_code, fix_usage = self.llm.fix_diagram_code(current_code, str(e))
                             # Track cost of fixing
@@ -113,7 +118,33 @@ class ExperimentRunner:
                             print(f"  > Fix generation failed: {fix_error}")
                             break # Fixer failed, abort
                     else:
-                        print("  > Max retries reached. Aborting step.")
+                        # Phase 2: Escalate to rescue model if available
+                        if rescue_model:
+                            print(f"  > Primary model exhausted. Escalating to rescue model ({rescue_model})...")
+                            for rescue_attempt in range(rescue_retries):
+                                try:
+                                    print(f"  > Rescue attempt {rescue_attempt+1}/{rescue_retries}...")
+                                    fixed_code, fix_usage = self.llm.fix_diagram_code(
+                                        current_code, str(e), override_model=rescue_model
+                                    )
+                                    # Track rescue cost separately
+                                    self._update_cost(cost_tracker, fix_usage, rescue_model, is_rescue=True)
+                                    current_code = fixed_code
+                                    
+                                    # Try rendering with rescue fix
+                                    self.diagram_gen.render(current_code, image_path)
+                                    render_success = True
+                                    print(f"  > Rescue successful on attempt {rescue_attempt+1}!")
+                                    with open(code_path, "w", encoding="utf-8") as f:
+                                        f.write(current_code)
+                                    mermaid_code = current_code
+                                    break
+                                except Exception as rescue_error:
+                                    print(f"  > Rescue attempt {rescue_attempt+1} failed: {rescue_error}")
+                                    if rescue_attempt == rescue_retries - 1:
+                                        print("  > Rescue model exhausted. Aborting step.")
+                        else:
+                            print("  > Max retries reached. Aborting step.")
             
             if not render_success:
                 break
@@ -154,22 +185,37 @@ class ExperimentRunner:
             json.dump(cost_tracker, f, indent=2)
             
         print(f"\nExperiment generation finished. Trajectory saved to {exp_dir}")
-        print(f"Estimated Cost: ${cost_tracker['estimated_cost']:.4f}")
+        print(f"Estimated Cost: ${cost_tracker['total_cost']:.4f}")
         return exp_dir
 
-    def _update_cost(self, tracker, usage, model_name):
-        """Updates the cost tracker based on usage and model rates."""
-        if not usage:
+    def _update_cost(self, cost_tracker, usage, model_name, is_rescue=False):
+        """Updates the cost tracker with token usage.
+        Args:
+            cost_tracker: The cost tracking dict
+            usage: Token usage dict from LLM response
+            model_name: Name of the model used
+            is_rescue: Whether this was a rescue model call
+        """
+        if not usage or "total_tokens" not in usage:
             return
             
-        in_tokens = usage.get("prompt_tokens", 0)
-        out_tokens = usage.get("completion_tokens", 0)
+        # Get cost rates
+        costs = self.config.get("costs", {})
+        model_costs = costs.get(model_name, {"input": 0, "output": 0})
         
-        tracker["input_tokens"] += in_tokens
-        tracker["output_tokens"] += out_tokens
+        input_tokens = usage.get("prompt_tokens", 0)
+        output_tokens = usage.get("completion_tokens", 0)
         
-        rates = self.config.get("costs", {}).get(model_name)
-        if rates:
-            input_cost = (in_tokens / 1_000_000) * rates.get("input", 0.0)
-            output_cost = (out_tokens / 1_000_000) * rates.get("output", 0.0)
-            tracker["estimated_cost"] += (input_cost + output_cost)
+        # Calculate cost (rates are per 1M tokens)
+        input_cost = (input_tokens / 1_000_000) * model_costs["input"]
+        output_cost = (output_tokens / 1_000_000) * model_costs["output"]
+        total_cost = input_cost + output_cost
+        
+        # Update tracker
+        cost_tracker["total_tokens"] += usage.get("total_tokens", 0)
+        cost_tracker["total_cost"] += total_cost
+        
+        # Track rescue costs separately
+        if is_rescue:
+            cost_tracker["rescue_cost"] += total_cost
+            cost_tracker["rescue_tokens"] += usage.get("total_tokens", 0)
