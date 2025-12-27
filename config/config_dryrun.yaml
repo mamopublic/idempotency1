@@ -1,6 +1,7 @@
 experiment:
   iterations: 3
   output_dir: "experiments"
+  ball_window_size: 2
  
 models:
   text_model: "openai/gpt-4o-mini"

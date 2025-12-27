@@ -41,7 +41,22 @@ def run_sweep():
             start_time = time.time()
             subprocess.run(cmd, check=True)
             duration = time.time() - start_time
-            print(f">>> Completed Vision Temp {vision_temp} in {duration:.2f} seconds.")
+            
+            # Save timing data
+            timing_data = {
+                "vision_temperature": vision_temp,
+                "text_temperature": TEXT_TEMPERATURE,
+                "duration_seconds": duration,
+                "duration_minutes": duration / 60,
+                "start_time": datetime.fromtimestamp(start_time).isoformat(),
+                "end_time": datetime.now().isoformat()
+            }
+            timing_file = os.path.join(temp_dir, "timing.json")
+            with open(timing_file, "w") as f:
+                import json
+                json.dump(timing_data, f, indent=2)
+            
+            print(f">>> Completed Vision Temp {vision_temp} in {duration:.2f} seconds ({duration/60:.1f} minutes).")
         except subprocess.CalledProcessError as e:
             print(f"!!! Error running vision temp {vision_temp}: {e}")
             # Continue to next temperature? Or stop? 

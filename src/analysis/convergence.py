@@ -216,4 +216,79 @@ def plot_batch_dashboard(batch_dir):
     fig_traj.savefig(os.path.join(batch_dir, "batch_dashboard_p1_trajectory.png"), dpi=150)
     plt.close(fig_traj)
     
+    # --- Window Analysis Dashboards ---
+    # Collect window metrics from each experiment
+    text_drifts = []
+    text_radii = []
+    vis_drifts = []
+    vis_radii = []
+    
+    for d in data:
+        if "text_window_drifts" in d:
+            text_drifts.append(d["text_window_drifts"])
+            text_radii.append(d["text_window_radii"])
+        if "visual_window_drifts" in d:
+            vis_drifts.append(d["visual_window_drifts"])
+            vis_radii.append(d["visual_window_radii"])
+    
+    # Text Window Drift
+    if text_drifts:
+        fig_wd, ax = plt.subplots(1, 1, figsize=(12, 6))
+        for i, drifts in enumerate(text_drifts):
+            indices = range(len(drifts))
+            ax.plot(indices, drifts, marker='o', markersize=3, alpha=0.7, label=run_names[i])
+        ax.set_title("Text Embedding: Window Center Drift")
+        ax.set_xlabel("Window Index")
+        ax.set_ylabel("Drift ||C_k - C_{k-1}||")
+        ax.legend(fontsize=8, loc='best')
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        fig_wd.savefig(os.path.join(batch_dir, "batch_dashboard_p1_window_drift_text.png"))
+        plt.close(fig_wd)
+    
+    # Text Window Radius
+    if text_radii:
+        fig_wr, ax = plt.subplots(1, 1, figsize=(12, 6))
+        for i, radii in enumerate(text_radii):
+            indices = range(len(radii))
+            ax.plot(indices, radii, marker='s', markersize=3, alpha=0.7, label=run_names[i])
+        ax.set_title("Text Embedding: Window Radius (Dispersion)")
+        ax.set_xlabel("Window Index")
+        ax.set_ylabel("Radius (Max Dist to Center)")
+        ax.legend(fontsize=8, loc='best')
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        fig_wr.savefig(os.path.join(batch_dir, "batch_dashboard_p1_window_radius_text.png"))
+        plt.close(fig_wr)
+    
+    # Visual Window Drift
+    if vis_drifts:
+        fig_vd, ax = plt.subplots(1, 1, figsize=(12, 6))
+        for i, drifts in enumerate(vis_drifts):
+            indices = range(len(drifts))
+            ax.plot(indices, drifts, marker='o', markersize=3, alpha=0.7, label=run_names[i])
+        ax.set_title("Visual Embedding: Window Center Drift")
+        ax.set_xlabel("Window Index")
+        ax.set_ylabel("Drift ||C_k - C_{k-1}||")
+        ax.legend(fontsize=8, loc='best')
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        fig_vd.savefig(os.path.join(batch_dir, "batch_dashboard_p1_window_drift_visual.png"))
+        plt.close(fig_vd)
+    
+    # Visual Window Radius
+    if vis_radii:
+        fig_vr, ax = plt.subplots(1, 1, figsize=(12, 6))
+        for i, radii in enumerate(vis_radii):
+            indices = range(len(radii))
+            ax.plot(indices, radii, marker='s', markersize=3, alpha=0.7, label=run_names[i])
+        ax.set_title("Visual Embedding: Window Radius (Dispersion)")
+        ax.set_xlabel("Window Index")
+        ax.set_ylabel("Radius (Max Dist to Center)")
+        ax.legend(fontsize=8, loc='best')
+        ax.grid(True, alpha=0.3)
+        plt.tight_layout()
+        fig_vr.savefig(os.path.join(batch_dir, "batch_dashboard_p1_window_radius_visual.png"))
+        plt.close(fig_vr)
+    
     print(f"Batch dashboards saved to {batch_dir}")

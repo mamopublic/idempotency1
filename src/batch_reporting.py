@@ -41,7 +41,7 @@ def generate_batch_report(batch_dir, config):
             if os.path.exists(cost_path):
                 with open(cost_path, "r", encoding="utf-8") as f:
                     cost_data = json.load(f)
-                    run_data["cost"] = cost_data.get("estimated_cost", 0.0)
+                    run_data["cost"] = cost_data.get("total_cost", 0.0)
                     total_cost += run_data["cost"]
             
             if run_data["metrics"]:
@@ -129,6 +129,16 @@ def generate_batch_report(batch_dir, config):
     lines.append("")
     lines.append("#### Trajectory Analysis")
     lines.append("![Trajectory Dashboard](batch_dashboard_p1_trajectory.png)")
+    lines.append("")
+    lines.append("#### Window Analysis - Text Embeddings")
+    lines.append("![Text Window Drift](batch_dashboard_p1_window_drift_text.png)")
+    lines.append("")
+    lines.append("![Text Window Radius](batch_dashboard_p1_window_radius_text.png)")
+    lines.append("")
+    lines.append("#### Window Analysis - Visual Embeddings")
+    lines.append("![Visual Window Drift](batch_dashboard_p1_window_drift_visual.png)")
+    lines.append("")
+    lines.append("![Visual Window Radius](batch_dashboard_p1_window_radius_visual.png)")
     lines.append("")
 
     # 3. Individual Experiment Summary

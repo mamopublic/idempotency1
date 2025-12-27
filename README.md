@@ -1,19 +1,18 @@
-# Idempotency 1: Generative Stability Experiment
+# Generative Stability: Attractor Dynamics in LMMs
 
-> **Status**: Active Research Phase
-> **Focus**: Information Theory, Generative Stability, Attractor Dynamics
+> **Research Framework**: Investigating the fixed-point stability and information entropy of Large Multimodal Models (LMMs) through Iterated Function Systems (IFS).
 
 ## Abstract
 
-Idempotency 1 is an experimental framework designed to investigate the **stability of information** in iterative generative loops. By cycling semantic concepts through multiple modalities—**Text Description $\to$ Code Structure $\to$ Visual Rendering $\to$ Text Description**—we aim to quantify information loss, semantic drift, and the emergence of stable "attractor" states in Large Multimodal Models (LMMs).
+This project provides a rigorous experimental framework to quantify the **semantic stability** of multimodal generative loops. By routing information through a cycle of **Natural Language $\to$ Formal Code $\to$ Visual Manifestation $\to$ Natural Language**, we treat the AI model as a transformer in a high-dimensional semantic space. 
 
-This project treats the generative loop as a **dynamical system**, asking whether rigorous architectural diagrams converge to a stable fixed point (idempotency) or diverge into chaos (semantic collapse) when subjected to repeated lossy compression/decompression by AI models.
+Our core research objective is to determine if concepts in latent space possess **stable attractors** (points of idempotency) or if they exhibit **divergent drift** (semantic collapse) when subjected to repeated lossy cross-modal translation.
 
-## Key Research Questions
+## Research Dimensions
 
-1.  **Attractor Dynamics**: Do initial prompts converge to specific, stable architectural patterns ("basins of attraction"), regardless of minor phrasing variations?
-2.  **Semantic Drift**: How does the creativity temperature of the Vision-Language Model affect the rate of information decay?
-3.  **Self-Correction**: Can a feedback loop with strict syntax constraints (Mermaid.js) act as a forcing function to stabilize "hallucinated" details?
+1.  **Attractor Dynamics**: Mapping the "basins of attraction" in embedding space. Does a "Cloud Architecture" prompt always collapse to the same canonical diagram?
+2.  **Semantic Entropy**: Using k-means clustering and Shannon entropy on SigLIP embeddings to measure the "crystallization" vs. "diffusion" of information over iterations.
+3.  **Cross-Modal Information Bottlenecks**: Quantifying information loss at the Vision $\to$ Text transition as a function of model temperature and prompt complexity.
 
 ## Getting Started
 
@@ -74,4 +73,5 @@ The repository includes specialized tools for performing controlled experiments:
 ## Documentation & Roadmap
 
 - **[Methodology & Architecture](docs/project_overview.md)**: Deep dive into the experimental loop, metric definitions (SigLIP/Titan embeddings), and system architecture.
+- **[Prompt Matrix](docs/prompt_matrix.md)**: Formal description of the 3x3x3 Scientific Matrix (27 prompts) used in our experiments.
 - **[Research Roadmap](RESEARCH_TODO.md)**: Open questions, planned experiments (Temperature Studies, Information Bottleneck), and publication goals.

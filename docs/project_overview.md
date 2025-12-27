@@ -1,8 +1,8 @@
-# Methodology & Architecture
+# Formal Framework: Iterated Multimodal Stability
 
-## Experimental Methodology
+This document outlines the theoretical and architectural underpinnings of the Idempotency Experiment. This research exists at the intersection of **Dynamical Systems Theory** and **Multimodal Latent Space Analysis**. 
 
-The Idempotency Experiment operates on a cyclic feedback loop designed to isolate the stability properties of Generative AI models. Unlike standard evaluation benchmarks which test "correctness" against a ground truth, this framework tests **self-consistency** (or idempotency) over time.
+We characterize the interaction between Vision-Language Models (VLM) and Large Language Models (LLM) as a lossy feedback loop, specifically an **Iterated Function System (IFS)**, to determine the limits of semantic stability.
 
 ### The Feedback Loop (The "Iterated Function System")
 
@@ -65,7 +65,7 @@ The codebase is organized to support robust, uninterruptible experimentation.
     *   **`similarity.py`**: Hosts the embedding engines. Supports pluggable backends (Local HuggingFace SigLIP vs. Remote AWS Titan) depending on compute availability.
     *   **`convergence.py`**: Calculates the stability matrices and detects convergence events (e.g., "Stopped changing at Step 14").
 *   **`batch.py` (The Scaler)**:
-    *   Manages concurrent or sequential execution of multiple prompt trajectories.
+    *   Manages concurrent or sequential execution of multiple prompt trajectories (see the **[Prompt Matrix](prompt_matrix.md)** for the experimental set).
     *   Aggregates results into the unified scientific PDF report.
 
 ### Directory Structure

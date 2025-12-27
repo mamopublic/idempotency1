@@ -1,6 +1,7 @@
 import os
 import json
 import shutil
+import time
 from datetime import datetime
 from .llm import OpenRouterClient
 from .diagram import MermaidGenerator
@@ -60,6 +61,14 @@ class ExperimentRunner:
             "rescue_cost": 0.0
         }
         
+        # Initialize profiling tracker
+        profiling = {
+            "text_generation_time": 0.0,
+            "rendering_time": 0.0,
+            "vision_extraction_time": 0.0,
+            "total_iteration_time": 0.0
+        }
+        
         print(f"Starting experiment: {experiment_name}")
         print(f"Initial Prompt: {initial_prompt[:50]}...")
 
@@ -68,10 +77,14 @@ class ExperimentRunner:
             
             # 1. Generate Diagram Code (Text -> Code)
             print("Generating diagram code...")
+            t0 = time.time()
             mermaid_code, text_usage = self.llm.generate_diagram_code(
                 current_prompt, 
                 self.prompts["diagram_generation"]
             )
+            text_gen_time = time.time() - t0
+            profiling["text_generation_time"] += text_gen_time
+            print(f"  > Text generation took {text_gen_time:.2f}s")
             
             # Update Cost (Text Model)
             self._update_cost(cost_tracker, text_usage, self.config["models"]["text_model"])
@@ -92,10 +105,14 @@ class ExperimentRunner:
             rescue_retries = self.config["models"].get("rescue_retries", 3)
             
             # Phase 1: Try with primary model
+            render_start = time.time()
             for attempt in range(max_retries + 1):
                 try:
                     self.diagram_gen.render(current_code, image_path)
                     render_success = True
+                    render_time = time.time() - render_start
+                    profiling["rendering_time"] += render_time
+                    print(f"  > Rendering took {render_time:.2f}s")
                     # If we fixed it, save the fixed version
                     if attempt > 0:
                         print(f"  > Fix successful on attempt {attempt}!")
@@ -151,10 +168,14 @@ class ExperimentRunner:
 
             # 3. Extract Prompt (Image -> Text)
             print("Extracting prompt from image...")
+            t0 = time.time()
             next_prompt, vision_usage = self.llm.extract_prompt_from_image(
                 image_path, 
                 self.prompts["vision_extraction"]
             )
+            vision_time = time.time() - t0
+            profiling["vision_extraction_time"] += vision_time
+            print(f"  > Vision extraction took {vision_time:.2f}s")
             
             # Update Cost (Vision Model)
             self._update_cost(cost_tracker, vision_usage, self.config["models"]["vision_model"])
@@ -183,9 +204,20 @@ class ExperimentRunner:
         cost_path = os.path.join(exp_dir, "cost_report.json")
         with open(cost_path, "w", encoding="utf-8") as f:
             json.dump(cost_tracker, f, indent=2)
+        
+        # Save Profiling Report
+        profiling_path = os.path.join(exp_dir, "profiling.json")
+        with open(profiling_path, "w", encoding="utf-8") as f:
+            json.dump(profiling, f, indent=2)
             
         print(f"\nExperiment generation finished. Trajectory saved to {exp_dir}")
         print(f"Estimated Cost: ${cost_tracker['total_cost']:.4f}")
+        print(f"\nProfiling Summary:")
+        print(f"  Text Generation: {profiling['text_generation_time']:.1f}s")
+        print(f"  Rendering:       {profiling['rendering_time']:.1f}s")
+        print(f"  Vision Extract:  {profiling['vision_extraction_time']:.1f}s")
+        total_time = sum([profiling['text_generation_time'], profiling['rendering_time'], profiling['vision_extraction_time']])
+        print(f"  Total:           {total_time:.1f}s ({total_time/60:.1f}min)")
         return exp_dir
 
     def _update_cost(self, cost_tracker, usage, model_name, is_rescue=False):

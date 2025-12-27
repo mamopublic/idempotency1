@@ -2,6 +2,7 @@ experiment:
   iterations: 30
   output_dir: "experiments"
   save_artifacts: true
+  ball_window_size: 10
 
 models:
   generation_params:
@@ -28,7 +29,14 @@ models:
   # text_model: "mistralai/pixtral-12b"  # Vision-focused, not ideal for code
   # vision_model: "mistralai/pixtral-12b"
   
-  embedding_type: "siglip" # Options: "siglip", "titan"
+  # Embedding model for similarity analysis
+  embedding_model: "siglip"  # Options: "siglip", "clip", "titan"
+
+# Semantic Entropy Analysis
+semantic_entropy:
+  n_clusters: 16  # Number of k-means clusters
+  tau: 0.1        # Softmax temperature for soft assignment (lower = harder)
+  random_state: 42
   embedding_model: "google/siglip-so400m-patch14-384"
 
 mermaid:

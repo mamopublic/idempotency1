@@ -16,6 +16,8 @@ torch
 sentence-transformers
 sentencepiece
 protobuf
+scikit-learn
+joblib
 
 # Optional / Cloud
 boto3
