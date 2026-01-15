@@ -1,0 +1,548 @@
+[
+  {
+    "iteration": 0,
+    "prompt": "A garbage collection mark-and-sweep. Scanner traces roots, marks reachable, sweeps unreachable, frees memory, waits for next cycle.",
+    "mermaid_code": null,
+    "image_path": null
+  },
+  {
+    "iteration": 1,
+    "prompt": "The system starts with a process labeled \"Start Garbage Collection\". This process connects to the next process, \"Scanner Traces Roots\". \"Scanner Traces Roots\" connects to \"Marks Reachable Objects\". \"Marks Reachable Objects\" connects to \"Sweeps Unreachable Objects\". \"Sweeps Unreachable Objects\" then leads to \"Frees Memory\". Finally, \"Frees Memory\" connects to \"Waits for Next Cycle\", which is the end of the process. All nodes are rectangles.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n    \n    classDef process fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F process;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_1.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 184,
+        "completion_tokens": 89,
+        "total_tokens": 273
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 99,
+        "total_tokens": 2022
+      }
+    }
+  },
+  {
+    "iteration": 2,
+    "prompt": "Here is the system architecture:\n\nThe system starts with a process labeled \"Start Garbage Collection.\" This process transitions to \"Scanner Traces Roots\" with an arrow indicating flow. \"Scanner Traces Roots\" transitions to \"Marks Reachable Objects.\" \"Marks Reachable Objects\" transitions to \"Sweeps Unreachable Objects.\" This then transitions to \"Frees Memory\", which finally transitions to \"Waits for Next Cycle.\"\n\nAll nodes should be represented as rectangles with purple fill and a dark gray outline. All arrows should also be dark gray.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef rectangle fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F rectangle;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_2.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 256,
+        "completion_tokens": 88,
+        "total_tokens": 344
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 109,
+        "total_tokens": 2032
+      }
+    }
+  },
+  {
+    "iteration": 3,
+    "prompt": "The system is a sequential process consisting of six steps:\n1. Start Garbage Collection.\n2. Scanner Traces Roots.\n3. Marks Reachable Objects.\n4. Sweeps Unreachable Objects.\n5. Frees Memory.\n6. Waits for Next Cycle.\n\nEach step is represented as a purple-colored rectangle. There is a directed arrow connecting each rectangle to the next rectangle in the sequence, showing the flow from top to bottom.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef nodeStyle fill:#800080,stroke:#333333,stroke-width:2px;\n    class A,B,C,D,E,F nodeStyle;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_3.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 264,
+        "completion_tokens": 90,
+        "total_tokens": 354
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 94,
+        "total_tokens": 2017
+      }
+    }
+  },
+  {
+    "iteration": 4,
+    "prompt": "The diagram is a flowchart of a garbage collection process. It begins with a rectangular node labeled \"Start Garbage Collection\". A directed edge connects this to a second rectangular node labeled \"Scanner Traces Roots\". Another directed edge connects this to a third rectangular node labeled \"Marks Reachable Objects\". This node is connected by a directed edge to a fourth rectangular node labeled \"Sweeps Unreachable Objects\". A directed edge connects this to a fifth rectangular node labeled \"Frees Memory\". Finally, a directed edge connects this last node to a sixth rectangular node labeled \"Waits for Next Cycle\". All the nodes are the same size and are vertically aligned.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef purple fill:#800080,stroke:#000000,stroke-width:2px;\n    class A,B,C,D,E,F purple;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_4.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 244,
+        "completion_tokens": 88,
+        "total_tokens": 332
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 128,
+        "total_tokens": 2051
+      }
+    }
+  },
+  {
+    "iteration": 5,
+    "prompt": "Here's a description of the system architecture:\n\nThe system starts with a \"Start Garbage Collection\" process.\nThis is immediately followed by \"Scanner Traces Roots\".\nNext, the system \"Marks Reachable Objects\".\nAfter marking, the system \"Sweeps Unreachable Objects\".\nThe system then \"Frees Memory\".\nFinally, the system \"Waits for Next Cycle\".\n\nAll steps are sequential, with each step directly leading to the next in a downward flow. Each step is represented as a rectangular process block. All process blocks are the same size and color.",
+    "mermaid_code": "flowchart TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef default fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F default;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_5.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 286,
+        "completion_tokens": 89,
+        "total_tokens": 375
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 119,
+        "total_tokens": 2042
+      }
+    }
+  },
+  {
+    "iteration": 6,
+    "prompt": "The system consists of a sequence of processes represented by blocks. The first block, labeled \"Start Garbage Collection\", initiates the process. An arrow descends from this block to the next block labeled \"Scanner Traces Roots\". Another arrow descends from \"Scanner Traces Roots\" to the block labeled \"Marks Reachable Objects\". An arrow descends \"Marks Reachable Objects\" to the block labeled \"Sweeps Unreachable Objects\". This is followed by a descending arrow to the block labeled \"Frees Memory\". Finally, an arrow descends from \"Frees Memory\" to the last block labeled \"Waits for Next Cycle\". All blocks are pink.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef processBlock fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F processBlock;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_6.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 267,
+        "completion_tokens": 90,
+        "total_tokens": 357
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 127,
+        "total_tokens": 2050
+      }
+    }
+  },
+  {
+    "iteration": 7,
+    "prompt": "The system starts with a \"Start Garbage Collection\" process. From there, the system moves to a \"Scanner Traces Roots\" process. Next, the process \"Marks Reachable Objects\" is executed. This is followed by a \"Sweeps Unreachable Objects\" process. The system then \"Frees Memory,\" after which it \"Waits for Next Cycle\", ready to start the process over again. Each of these processes is represented as a rectangular node, pink in color with a thin outline. Each process leads to the next in a linear top-to-bottom form via a single arrow.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef pink fill:#ffcccb,stroke:#ff69b4,stroke-width:2px;\n    class A,B,C,D,E,F pink;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_7.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 289,
+        "completion_tokens": 91,
+        "total_tokens": 380
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 120,
+        "total_tokens": 2043
+      }
+    }
+  },
+  {
+    "iteration": 8,
+    "prompt": "Create a flowchart-like diagram illustrating a garbage collection process. Start with a rectangular node labeled \"Start Garbage Collection\". An arrow descends from this node to another rectangular node labeled \"Scanner Traces Roots\".  Another arrow descends from this node to a rectangular node that says \"Marks Reachable Objects\". An arrow descends from that node pointing to a rectangular node labeled \"Sweeps Unreachable Objects\". An arrow descends from the Sweeps Unreachable Objects node to another one labeled \"Frees Memory\". Finally, an arrow descends from this node to a rectangular node at the bottom labeled \"Waits for Next Cycle\". All rectangles should be the same size and have a light pink background.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef processNode fill:#ffcccb, stroke:#000, stroke-width:1px;\n    class A,B,C,D,E,F processNode;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_8.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 275,
+        "completion_tokens": 90,
+        "total_tokens": 365
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 135,
+        "total_tokens": 2058
+      }
+    }
+  },
+  {
+    "iteration": 9,
+    "prompt": "Create a diagram illustrating a garbage collection process. The diagram consists of a vertical sequence of steps, each represented by a rectangular node.\n\nThe first node, at the top, is labeled \"Start Garbage Collection\". An arrow connects this node to the next.\n\nThe second node is labeled \"Scanner Traces Roots\". An arrow connects this node to the next.\n\nThe third node is labeled \"Marks Reachable Objects\". An arrow connects this node to the next.\n\nThe fourth node is labeled \"Sweeps Unreachable Objects\". An arrow connects this node to the next.\n\nThe fifth node is labeled \"Frees Memory\". An arrow connects this node to the next.\n\nThe sixth and final node, at the bottom, is labeled \"Waits for Next Cycle\".\n",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef rectangle fill:#ffcccb, stroke:#000, stroke-width:2px;\n    class A,B,C,D,E,F rectangle;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_9.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 297,
+        "completion_tokens": 88,
+        "total_tokens": 385
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 156,
+        "total_tokens": 2079
+      }
+    }
+  },
+  {
+    "iteration": 10,
+    "prompt": "Here's a system flow. It begins with a \"Start Garbage Collection\" process. This leads to a \"Scanner Traces Roots\" process. Followed by \"Marks Reachable Objects\". Next is \"Sweeps Unreachable Objects\", which then feeds into \"Frees Memory\". Finally, the system \"Waits for Next Cycle\". Each step should be represented by a rectangular node and linked by a unidirectional arrow pointing downwards. All nodes should be filled with a light purple color.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef processNode fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F processNode;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_10.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 306,
+        "completion_tokens": 90,
+        "total_tokens": 396
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 97,
+        "total_tokens": 2020
+      }
+    }
+  },
+  {
+    "iteration": 11,
+    "prompt": "Here's a description of the garbage collection process:\n\nThe process begins with a node labeled \"Start Garbage Collection\". This leads to the second node, \"Scanner Traces Roots\", via a downward-pointing arrow. The second node leads to the third node, \"Marks Reachable Objects\", again via a downward-pointing arrow. The third node connects via a downward-pointing arrow to \"Sweeps Unreachable Objects\". This node leads to \"Frees Memory\" via a downward-pointing arrow. Finally, the \"Frees Memory\" node similarly connects to a node labeled \"Waits for Next Cycle\". All nodes are rectangular.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef lightPurple fill:#E6E6FA;\n    class A,B,C,D,E,F lightPurple;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_11.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 255,
+        "completion_tokens": 82,
+        "total_tokens": 337
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 128,
+        "total_tokens": 2051
+      }
+    }
+  },
+  {
+    "iteration": 12,
+    "prompt": "Here's a description of the system architecture:\n\nThe system begins with a \"Start Garbage Collection\" process. From there, the workflow moves to a \"Scanner Traces Roots\" process. Once completed, the system \"Marks Reachable Objects,\" then \"Sweeps Unreachable Objects.\" Post-sweep, the system \"Frees Memory\" and concludes by \"Waiting for Next Cycle.\" Each process flows sequentially into the next. All of the components are represented as rectangular boxes with a violet fill. Connections between components are represented as arrows.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waits for Next Cycle]\n\n    classDef rectangular fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F rectangular;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_12.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 282,
+        "completion_tokens": 88,
+        "total_tokens": 370
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 108,
+        "total_tokens": 2031
+      }
+    }
+  },
+  {
+    "iteration": 13,
+    "prompt": "Create a system that depicts a garbage collection cycle. The system starts with a node labeled \"Start Garbage Collection\". This node connects via a downward arrow to a node labeled \"Scanner Traces Roots\". That node then has a downward arrow connection to a node labeled \"Marks Reachable Objects\". This node then connects with a downward arrow to a node labeled \"Sweeps Unreachable Objects\". This node connects via a downward arrow to a node labeled \"Frees Memory\". The \"Frees Memory\" node has a downward arrow connection to a final node named \"Waiting for Next Cycle\". All nodes should be the same size and color. The arrow direction should be consistent.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef process fill:#8A2BE2,stroke:#000,stroke-width:2px;\n    class A,B,C,D,E,F process;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_13.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 263,
+        "completion_tokens": 89,
+        "total_tokens": 352
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 132,
+        "total_tokens": 2055
+      }
+    }
+  },
+  {
+    "iteration": 14,
+    "prompt": "The architecture consists of a linear sequence of steps. The first step, labeled \"Start Garbage Collection\" is a pinkish-purple rectangle. It connects to the second step which is a pinkish-purple rectangle labeled \"Scanner Traces Roots\". The second step then connects to the third step which is a pinkish-purple rectangle labeled \"Marks Reachable Objects\". The third step then connects to the fourth step which is a pinkish-purple rectangle labeled \"Sweeps Unreachable Objects\". The fourth step connects to the fifth step, which is a pinkish-purple rectangle labeled \"Frees Memory\". Finally, the fifth step connects to the sixth step, which is a pinkish-purple rectangle labeled \"Waiting for Next Cycle\". Each of the connections is a simple arrow pointing from the previous step to the next.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef nodeStyle fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F nodeStyle;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_14.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 289,
+        "completion_tokens": 89,
+        "total_tokens": 378
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 164,
+        "total_tokens": 2087
+      }
+    }
+  },
+  {
+    "iteration": 15,
+    "prompt": "A garbage collection process is initiated with the \"Start Garbage Collection\" node. From there, flow downwards to the \"Scanner Traces Roots\" node. Next, it flows to the \"Marks Reachable Objects\" node. Then it flows to the \"Sweeps Unreachable Objects\" node. The process moves to \"Frees Memory\", and finally ends at \"Waiting for Next Cycle\". All nodes are rectangular. All connectors are arrows.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef pinkishPurple fill:#DDA0DD,stroke:#8B008B,stroke-width:2px;\n    class A,B,C,D,E,F pinkishPurple;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_15.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 315,
+        "completion_tokens": 95,
+        "total_tokens": 410
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 87,
+        "total_tokens": 2010
+      }
+    }
+  },
+  {
+    "iteration": 16,
+    "prompt": "Create a flowchart illustrating the Garbage Collection process. The flow starts with a node labeled \"Start Garbage Collection\". This node connects to the next node, labeled \"Scanner Traces Roots\". Next in the flow is a node labeled \"Marks Reachable Objects\", followed by a node labeled \"Sweeps Unreachable Objects\". This node connects to a node labeled \"Frees Memory\", which then connects to the final node, \"Waiting for Next Cycle\". All the nodes in the diagram are rectangles, and the connections are simple arrows.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef rectangular fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F rectangular;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_16.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 245,
+        "completion_tokens": 87,
+        "total_tokens": 332
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 104,
+        "total_tokens": 2027
+      }
+    }
+  },
+  {
+    "iteration": 17,
+    "prompt": "Here's a description of the system architecture:\n\nThe system begins with a process labeled \"Start Garbage Collection.\" This process flows directly into \"Scanner Traces Roots.\" \"Scanner Traces Roots\" is followed by the \"Marks Reachable Objects\" process then this leads to the \"Sweeps Unreachable Objects\" process. The process after \"Sweeps Unreachable Objects\" is \"Frees Memory\", then lastly after this process it flows directly into \"Waiting for Next Cycle.\" All processes are represented by rectangles.",
+    "mermaid_code": "flowchart TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef rectangle fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F rectangle;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_17.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 262,
+        "completion_tokens": 88,
+        "total_tokens": 350
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 103,
+        "total_tokens": 2026
+      }
+    }
+  },
+  {
+    "iteration": 18,
+    "prompt": "Here's a description of the system architecture:\n\nThe system is a sequential process represented by a series of connected rectangular nodes.\n\n1.  The first node, labeled \"Start Garbage Collection\", initiates the process.\n2.  A directed edge connects \"Start Garbage Collection\" to the next node, \"Scanner Traces Roots\".\n3.  A directed edge connects \"Scanner Traces Roots\" to the next node, \"Marks Reachable Objects\".\n4. A directed edge connects \"Marks Reachable Objects\" to the next node, \"Sweeps Unreachable Objects\".\n5. A directed edge connects \"Sweeps Unreachable Objects\" to the node, \"Frees Memory\".\n6.  \"Frees Memory\" is connected via a directed edge to the final node, \"Waiting for Next Cycle\".\n\nAll nodes are pink rectangles.\nThe edges are arrows pointing downwards.\n",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef process fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F process;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_18.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 257,
+        "completion_tokens": 87,
+        "total_tokens": 344
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 183,
+        "total_tokens": 2106
+      }
+    }
+  },
+  {
+    "iteration": 19,
+    "prompt": "Here's a description of the architecture:\n\nThe system illustrates a garbage collection cycle, proceeding through a sequence of steps.\n\nIt begins with a \"Start Garbage Collection\" node, which then connects to \"Scanner Traces Roots\".\n\nFrom \"Scanner Traces Roots\", the flow proceeds to \"Marks Reachable Objects\".\n\nThis is followed by a transition to \"Sweeps Unreachable Objects\".\n\nNext, \"Sweeps Unreachable Objects\" connects to \"Frees Memory\".\n\nFinally, the process transitions to \"Waiting for Next Cycle\".",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef pink fill:#ffcccb,stroke:#000,stroke-width:2px;\n    class A,B,C,D,E,F pink;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_19.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 330,
+        "completion_tokens": 87,
+        "total_tokens": 417
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 110,
+        "total_tokens": 2033
+      }
+    }
+  },
+  {
+    "iteration": 20,
+    "prompt": "Here is a description of the system architecture.\n\nThe system consists of a vertical sequence of six rectangular nodes, representing steps in a process. Each node is connected to the next one in the sequence by a downward-pointing arrow. All nodes are filled with the color magenta, and have a dark gray border. The nodes, in top-to-bottom order, are labeled as follows:\n1. \"Start Garbage Collection\"\n2. \"Scanner Traces Roots\"\n3. \"Marks Reachable Objects\"\n4. \"Sweeps Unreachable Objects\"\n5. \"Frees Memory\"\n6. \"Waiting for Next Cycle\"\n",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef processNode fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F processNode;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_20.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 259,
+        "completion_tokens": 89,
+        "total_tokens": 348
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 132,
+        "total_tokens": 2055
+      }
+    }
+  },
+  {
+    "iteration": 21,
+    "prompt": "Here's a description of the Garbage Collection workflow:\n\nThe process begins with a rectangular node labeled \"Start Garbage Collection.\" A directed arrow connects this node to the next, \"Scanner Traces Roots,\" which is also a rectangular node. An additional directed arrow connects \"Scanner Traces Roots\" to  \"Marks Reachable Objects,\" a rectangular node. From \"Marks Reachable Objects,\" there is a directed arrow that points to another rectangular node, \"Sweeps Unreachable Objects\". This is connected via directed arrow to the next rectangular node, which is labeled \"Frees Memory.\" Finally, \"Frees Memory\" connects, via arrow, to the \"Waiting for Next Cycle\" rectangular node, completing the chain.",
+    "mermaid_code": "graph TD\n    A[\"Start Garbage Collection\"] --> B[\"Scanner Traces Roots\"]\n    B --> C[\"Marks Reachable Objects\"]\n    C --> D[\"Sweeps Unreachable Objects\"]\n    D --> E[\"Frees Memory\"]\n    E --> F[\"Waiting for Next Cycle\"]\n\n    classDef processNode fill:#FF00FF, stroke:#333333, stroke-width:2px;\n    class A,B,C,D,E,F processNode;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_21.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 280,
+        "completion_tokens": 91,
+        "total_tokens": 371
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 144,
+        "total_tokens": 2067
+      }
+    }
+  },
+  {
+    "iteration": 22,
+    "prompt": "The system starts with a rectangular node labeled \"Start Garbage Collection\". This node connects to another rectangular node labeled \"Scanner Traces Roots\". The system flows to a rectangular node labeled \"Marks Reachable Objects\" connected to a rectangular node labeled \"Sweeps Unreachable Objects\". This node then connects to a rectangular node labeled \"Frees Memory\" and finally a rectangular node labeled \"Waiting for Next Cycle\". All nodes should be colored in pink.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef rectangular fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F rectangular;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_22.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 298,
+        "completion_tokens": 87,
+        "total_tokens": 385
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 88,
+        "total_tokens": 2011
+      }
+    }
+  },
+  {
+    "iteration": 23,
+    "prompt": "Create a flowchart illustrating the steps in a garbage collection process. The flow starts with a rectangular node labeled \"Start Garbage Collection\". This node connects via a downward arrow to another rectangular node labeled \"Scanner Traces Roots\". Another downward arrow connects \"Scanner Traces Roots\" to a rectangular node labeled \"Marks Reachable Objects\". This node is connected by an arrow to a rectangular node labeled \"Sweeps Unreachable Objects\". This node connects via a downward arrow to a rectangular node labeled \"Frees Memory\". Finally, a downward arrow connects \"Frees Memory\" to a rectangular node labeled \"Waiting for Next Cycle\". All the nodes share the same style.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef pink fill:#ffcccb,stroke:#ff69b4,stroke-width:2px;\n    class A,B,C,D,E,F pink;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_23.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 245,
+        "completion_tokens": 90,
+        "total_tokens": 335
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 130,
+        "total_tokens": 2053
+      }
+    }
+  },
+  {
+    "iteration": 24,
+    "prompt": "Here's a description of a system representing a garbage collection cycle:\n\nThe process begins with a \"Start Garbage Collection\" node. This node transitions to \"Scanner Traces Roots\". Next, \"Marks Reachable Objects\" follows. This is succeeded by the step \"Sweeps Unreachable Objects\". Following this is the action \"Frees Memory\". The cycle completes with \"Waiting for Next Cycle\". Each step is represented by a rectangular node with rounded corners which are all colored magenta, all transitions are illustrated with a downward-pointing arrow.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef nodeStyle fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F nodeStyle;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_24.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 288,
+        "completion_tokens": 89,
+        "total_tokens": 377
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 108,
+        "total_tokens": 2031
+      }
+    }
+  },
+  {
+    "iteration": 25,
+    "prompt": "Create a vertically-oriented flowchart. The first node, labeled \"Start Garbage Collection,\" connects to the second node via a downward-pointing arrow. The second node is labeled \"Scanner Traces Roots,\" which in turn connects to the third node, labeled \"Marks Reachable Objects,\" via a downward-pointing arrow. From the third node, another downward-pointing arrow connects to the fourth node, labeled \"Sweeps Unreachable Objects.\" This node connects via a downward-pointing arrow to a node labeled \"Frees Memory,\" which itself connects via a downward-pointing arrow to the final node, labeled \"Waiting for Next Cycle.\" All nodes should have rounded edges and magenta fill.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef roundedNodes fill:#ff00ff, stroke:#000000, stroke-width:2px, rx:10px, ry:10px;\n    class A,B,C,D,E,F roundedNodes;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_25.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 263,
+        "completion_tokens": 100,
+        "total_tokens": 363
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 136,
+        "total_tokens": 2059
+      }
+    }
+  },
+  {
+    "iteration": 26,
+    "prompt": "Create a vertical flow chart depicting the following sequence of operations in a garbage collection cycle. The top node is labeled \"Start Garbage Collection\". It connects to the next node below it labeled \"Scanner Traces Roots\". This connects to the next node labeled \"Marks Reachable Objects\". This connects to the next node labeled \"Sweeps Unreachable Objects\". This connects to the next node labeled \"Frees Memory\", and finally, it connects to the last node labeled \"Waiting for Next Cycle\". All nodes are rounded rectangles.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef roundedEdges fill:#ff00ff, stroke:#000, stroke-width:2px, rx:10px, ry:10px;\n    class A,B,C,D,E,F roundedEdges;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_26.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 294,
+        "completion_tokens": 99,
+        "total_tokens": 393
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 103,
+        "total_tokens": 2026
+      }
+    }
+  },
+  {
+    "iteration": 27,
+    "prompt": "Create a flowchart diagram with the following nodes in a sequential top-down order:\n\n1.  A rounded rectangle labeled \"Start Garbage Collection\".\n2.  A rounded rectangle labeled \"Scanner Traces Roots\", connected to the previous node with a downward-pointing arrow.\n3.  A rounded rectangle labeled \"Marks Reachable Objects\", connected to the previous node with a downward-pointing arrow.\n4.  A rounded rectangle labeled \"Sweeps Unreachable Objects\", connected to the previous node with a downward-pointing arrow.\n5.  A rounded rectangle labeled \"Frees Memory\", connected to the previous node with a downward-pointing arrow.\n6.  A rounded rectangle labeled \"Waiting for Next Cycle\", connected to the previous node with a downward-pointing arrow.\n\nAll the nodes should be filled in with a magenta color.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef roundedRect fill:#f9f,stroke:#333,stroke-width:2px,rx:10px,ry:10px;\n    class A,B,C,D,E,F roundedRect;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_27.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 260,
+        "completion_tokens": 99,
+        "total_tokens": 359
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 172,
+        "total_tokens": 2095
+      }
+    }
+  },
+  {
+    "iteration": 28,
+    "prompt": "The system starts with an action called \"Start Garbage Collection\". \nThen, a \"Scanner Traces Roots\" action is performed. \nAfter that, the system \"Marks Reachable Objects\".\nNext in the process, it \"Sweeps Unreachable Objects\".\nThe penultimate step is to \"Frees Memory\".\nFinally, the system goes to \"Waiting for Next Cycle\".\nEach action is represented by a rectangular node, in a vertical sequence, connected by arrows that indicate the flow of control.",
+    "mermaid_code": "graph TD\n    A[\"Start Garbage Collection\"]:::rounded\n    B[\"Scanner Traces Roots\"]:::rounded\n    C[\"Marks Reachable Objects\"]:::rounded\n    D[\"Sweeps Unreachable Objects\"]:::rounded\n    E[\"Frees Memory\"]:::rounded\n    F[\"Waiting for Next Cycle\"]:::rounded\n\n    A --> B\n    B --> C\n    C --> D\n    D --> E\n    E --> F\n\n    classDef rounded fill:#FF00FF, stroke:#000000, stroke-width:2px;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_28.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 323,
+        "completion_tokens": 114,
+        "total_tokens": 437
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 103,
+        "total_tokens": 2026
+      }
+    }
+  },
+  {
+    "iteration": 29,
+    "prompt": "Create a diagram that illustrates a garbage collection process.\n\nThe process starts with a node labeled \"Start Garbage Collection\". \nFrom \"Start Garbage Collection\", draw a downward arrow to a node labeled \"Scanner Traces Roots\". \nFrom \"Scanner Traces Roots\", draw a downward arrow to a node labeled \"Marks Reachable Objects\".\nFrom \"Marks Reachable Objects\", draw a downward arrow to a node labeled \"Sweeps Unreachable Objects\".\nFrom \"Sweeps Unreachable Objects\", draw a downward arrow to a node labeled \"Frees Memory\". \nFrom \"Frees Memory\", draw a downward arrow to a node labeled \"Waiting for Next Cycle\".\n\nAll nodes should be rectangular and filled with a bright pink color. The arrows should be connected to the centers of the nodes.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef actionStyle fill:#f9f,stroke:#333,stroke-width:2px;\n    class A,B,C,D,E,F actionStyle;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_29.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 255,
+        "completion_tokens": 89,
+        "total_tokens": 344
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 161,
+        "total_tokens": 2084
+      }
+    }
+  },
+  {
+    "iteration": 30,
+    "prompt": "Here's a description of the system:\n\nThe system initiates with a \"Start Garbage Collection\" process. This is immediately followed by a \"Scanner Traces Roots\" process. The next step is \"Marks Reachable Objects\". After this, the system \"Sweeps Unreachable Objects,\" and then \"Frees Memory.\" Finally, the system enters a \"Waiting for Next Cycle\" state. Each of these processes is connected sequentially with downward-pointing arrows indicating the order of operations.",
+    "mermaid_code": "graph TD\n    A[Start Garbage Collection] --> B[Scanner Traces Roots]\n    B --> C[Marks Reachable Objects]\n    C --> D[Sweeps Unreachable Objects]\n    D --> E[Frees Memory]\n    E --> F[Waiting for Next Cycle]\n\n    classDef brightPink fill:#ff69b4,stroke:#000,stroke-width:2px;\n    class A,B,C,D,E,F brightPink;",
+    "image_path": "experiments/vision_sweep_20251218_100919/vision_temp_1.0/prompt_12/trajectory/iter_30.png",
+    "usage": {
+      "text_gen": {
+        "prompt_tokens": 311,
+        "completion_tokens": 90,
+        "total_tokens": 401
+      },
+      "vision_ext": {
+        "prompt_tokens": 1923,
+        "completion_tokens": 97,
+        "total_tokens": 2020
+      }
+    }
+  }
+]

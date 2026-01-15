@@ -140,6 +140,16 @@ def generate_batch_report(batch_dir, config):
     lines.append("")
     lines.append("![Visual Window Radius](batch_dashboard_p1_window_radius_visual.png)")
     lines.append("")
+    lines.append("#### Semantic Entropy Trajectories")
+    lines.append("![Text Trajectories P1](semantic_entropy_text_trajectories.png)")
+    lines.append("")
+    lines.append("![Image Trajectories P1](semantic_entropy_image_trajectories.png)")
+    lines.append("")
+    lines.append("#### Semantic Entropy Trajectories (Problem 2)")
+    lines.append("![Text Trajectories P2](semantic_entropy_text_trajectories_p2.png)")
+    lines.append("")
+    lines.append("![Image Trajectories P2](semantic_entropy_image_trajectories_p2.png)")
+    lines.append("")
 
     # 3. Individual Experiment Summary
     lines.append("## 3. Individual Experiments")

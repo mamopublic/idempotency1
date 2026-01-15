@@ -78,4 +78,37 @@ The codebase is organized to support robust, uninterruptible experimentation.
 ├── experiments/          # Output Artifacts (Reports, Graphs, JSON Data)
 ├── src/                  # Core Python Logic
 └── tools/                # Specialized Research Scripts (Sweeps, Dry Runs)
+    ├── run_sweep.py      # Primary research workflow: temperature sweeps
+    ├── analyze_sweep.py  # Cross-temperature completion analysis
+    └── run_dry_run.py    # Verification/testing runs
 ```
+
+### Experiment Output Hierarchy
+
+**Temperature Sweep (Primary Research Mode):**
+```
+experiments/vision_sweep_YYYYMMDD_HHMMSS/
+├── completion_analysis.md              # Cross-temperature summary
+├── semantic_entropy_*_over_time_p2.png # Aggregate time-series plots
+├── semantic_entropy_*_vs_temperature_p2.png # Temperature comparison plots
+├── vision_temp_0.1/                    # Low temperature batch
+│   ├── batch_report.md/pdf             # Per-temperature analysis
+│   ├── batch_dashboard_*.png           # Temperature-specific visualizations
+│   ├── semantic_entropy_*_trajectories_p2.png # Trajectory plots
+│   └── prompt_N/                       # Individual experiment trajectories
+│       ├── trajectory.json             # Complete iteration history
+│       └── metrics.json                # Convergence metrics
+├── vision_temp_0.4/                    # Medium-low temperature
+├── vision_temp_0.7/                    # Medium-high temperature
+└── vision_temp_1.0/                    # High temperature batch
+```
+
+**Single Batch (Legacy Mode):**
+```
+experiments/batch_YYYYMMDD_HHMMSS/
+└── [Same structure as vision_temp_X/ subdirectories]
+```
+
+The sweep structure enables systematic study of how vision model temperature (description creativity) affects semantic stability while holding text generation temperature constant.
+
+**Example:** See [../examples/sample_sweep/](../examples/sample_sweep/) for a complete example demonstrating this structure with real experimental data, visualizations, and detailed analysis.
