@@ -40,10 +40,10 @@ def main():
     # Run
     if args.batch:
         runner = BatchRunner(config)
-        runner.run_batch(args.batch, output_dir=args.output_dir)
+        runner.run_batch(args.batch, output_dir=args.output_dir, config_path=args.config)
     elif args.prompt:
         runner = ExperimentRunner(config)
-        exp_dir = runner.run(args.prompt, experiment_name=args.name, output_dir=args.output_dir)
+        exp_dir = runner.run(args.prompt, experiment_name=args.name, output_dir=args.output_dir, config_path=args.config)
         
         # Post-Processing Analysis
         analyzer = ExperimentAnalyzer(config)

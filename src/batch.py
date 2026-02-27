@@ -12,8 +12,14 @@ class BatchRunner:
         self.config = config
         self.runner = ExperimentRunner(config)
 
-    def run_batch(self, batch_file, output_dir=None):
-        """Runs experiments for each prompt in the batch file."""
+    def run_batch(self, batch_file, output_dir=None, config_path=None):
+        """Runs experiments for each prompt in the batch file.
+        
+        Args:
+            batch_file: Path to text or JSON file with one prompt per line
+            output_dir: Optional override for the batch output directory
+            config_path: Optional path to the config file, for snapshotting into each experiment dir
+        """
         if not os.path.exists(batch_file):
             print(f"Batch file not found: {batch_file}")
             return
@@ -50,7 +56,7 @@ class BatchRunner:
             print(f"Running batch item {idx+1}/{len(prompts)}: {exp_name}")
             
             # Run Experiment
-            exp_path = self.runner.run(prompt, experiment_name=exp_name, output_dir=batch_dir)
+            exp_path = self.runner.run(prompt, experiment_name=exp_name, output_dir=batch_dir, config_path=config_path)
             
             # Post-Process & Visualize
             analyzer = ExperimentAnalyzer(self.config)

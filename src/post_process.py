@@ -178,7 +178,8 @@ class ExperimentAnalyzer:
                 "visual_sim_prev": 0.0,
                 "cross_modal_distance": 1.0,
                 "semantic_distance_prev": 0.0,
-                "visual_distance_prev": 1.0
+                "visual_distance_prev": 1.0,
+                "mmd_text_sim_prev": 0.0
             }
             
             # Cross-Modal: Text(i) vs Image(i)
@@ -199,6 +200,12 @@ class ExperimentAnalyzer:
                 if image_embeddings[i] is not None and image_embeddings[i-1] is not None:
                     step_data["visual_sim_prev"] = self.similarity.model.compute_similarity(image_embeddings[i], image_embeddings[i-1])
                     step_data["visual_distance_prev"] = 1.0 - step_data["visual_sim_prev"]
+                
+                # MMD code similarity: character-level difflib on the Mermaid source
+                mmd_i = valid_steps[i].get("mermaid_code") or ""
+                mmd_prev = valid_steps[i-1].get("mermaid_code") or ""
+                if mmd_i and mmd_prev:
+                    step_data["mmd_text_sim_prev"] = self.similarity.compute_text_similarity(mmd_i, mmd_prev)
             
             series.append(step_data)
         

@@ -5,11 +5,20 @@ import time
 from datetime import datetime
 from .llm import OpenRouterClient
 from .diagram import MermaidGenerator
+from .mermaid_normalizer import normalize_mermaid_code
 
 class ExperimentRunner:
     def __init__(self, config):
         self.config = config
-        self.prompts = config.get("system_prompts", {})
+        
+        # Select prompt set based on use_tight_prompts flag
+        use_tight = config.get("prompts", {}).get("use_tight_prompts", False)
+        if use_tight and "tight_system_prompts" in config:
+            self.prompts = config["tight_system_prompts"]
+            print("Using tight system prompts.")
+        else:
+            self.prompts = config.get("system_prompts", {})
+        
         if not self.prompts:
              print("Warning: No system_prompts found in config.")
              
@@ -18,9 +27,17 @@ class ExperimentRunner:
         
         self.default_output_dir = config["experiment"]["output_dir"]
         self.iterations = config["experiment"]["iterations"]
+        self.normalize_mermaid = config["experiment"].get("normalize_mermaid", False)
 
-    def run(self, initial_prompt, experiment_name=None, output_dir=None):
-        """Runs the Prompt -> Diagram -> Prompt loop."""
+    def run(self, initial_prompt, experiment_name=None, output_dir=None, config_path=None):
+        """Runs the Prompt -> Diagram -> Prompt loop.
+        
+        Args:
+            initial_prompt: The starting concept/description
+            experiment_name: Optional name for the experiment directory
+            output_dir: Optional override for the base output directory
+            config_path: Optional path to the config file used, for snapshotting
+        """
         
         if not experiment_name:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -31,10 +48,17 @@ class ExperimentRunner:
         traj_dir = os.path.join(exp_dir, "trajectory")
         os.makedirs(traj_dir, exist_ok=True)
         
-        # Save Run Config
+        # --- Snapshot the config file used for this run ---
+        if config_path and os.path.isfile(config_path):
+            shutil.copy(config_path, os.path.join(exp_dir, "config_snapshot.yaml"))
+        
+        # Save Run Config (JSON summary, kept for backwards compatibility)
+        use_tight = self.config.get("prompts", {}).get("use_tight_prompts", False)
         run_config = {
             "initial_prompt": initial_prompt,
             "system_prompts": self.prompts,
+            "prompts_variant": "tight" if use_tight else "standard",
+            "normalize_mermaid": self.normalize_mermaid,
             "models": self.config.get("models", {}),
             "experiment_settings": self.config.get("experiment", {}),
             "timestamp": datetime.now().isoformat()
@@ -71,6 +95,8 @@ class ExperimentRunner:
         
         print(f"Starting experiment: {experiment_name}")
         print(f"Initial Prompt: {initial_prompt[:50]}...")
+        print(f"Mermaid normalization: {'ON' if self.normalize_mermaid else 'OFF'}")
+        print(f"Prompts: {'tight' if use_tight else 'standard'}")
 
         for i in range(1, self.iterations + 1):
             print(f"\n--- Iteration {i} ---")
@@ -89,6 +115,13 @@ class ExperimentRunner:
             # Update Cost (Text Model)
             self._update_cost(cost_tracker, text_usage, self.config["models"]["text_model"])
             
+            # --- Option A: Normalize Mermaid code to remove cosmetic variance ---
+            if self.normalize_mermaid:
+                mermaid_code_raw = mermaid_code
+                mermaid_code = normalize_mermaid_code(mermaid_code)
+                if mermaid_code != mermaid_code_raw:
+                    print("  > Mermaid code normalized (cosmetic variance removed).")
+            
             # Save Code
             code_path = os.path.join(traj_dir, f"iter_{i}.mmd")
             with open(code_path, "w", encoding="utf-8") as f:
@@ -103,6 +136,14 @@ class ExperimentRunner:
             current_code = mermaid_code
             rescue_model = self.config["models"].get("rescue_model")
             rescue_retries = self.config["models"].get("rescue_retries", 3)
+            rescue_strategy = self.config["models"].get("rescue_strategy", "fix")
+            
+            # Track rescue metadata for this iteration
+            rescue_meta = {
+                "rescue_invoked": False,
+                "rescue_strategy": None,
+                "rescue_attempts": 0
+            }
             
             # Phase 1: Try with primary model
             render_start = time.time()
@@ -137,16 +178,36 @@ class ExperimentRunner:
                     else:
                         # Phase 2: Escalate to rescue model if available
                         if rescue_model:
-                            print(f"  > Primary model exhausted. Escalating to rescue model ({rescue_model})...")
+                            print(f"  > Primary model exhausted. Escalating to rescue model ({rescue_model}, strategy={rescue_strategy})...")
+                            rescue_meta["rescue_invoked"] = True
+                            rescue_meta["rescue_strategy"] = rescue_strategy
+                            
                             for rescue_attempt in range(rescue_retries):
+                                rescue_meta["rescue_attempts"] += 1
                                 try:
                                     print(f"  > Rescue attempt {rescue_attempt+1}/{rescue_retries}...")
-                                    fixed_code, fix_usage = self.llm.fix_diagram_code(
-                                        current_code, str(e), override_model=rescue_model
-                                    )
+                                    
+                                    if rescue_strategy == "regenerate":
+                                        # Regenerate from scratch using the current prompt
+                                        print("  > Rescue strategy: regenerate from current prompt.")
+                                        fixed_code, fix_usage = self.llm.generate_diagram_code(
+                                            current_prompt,
+                                            self.prompts["diagram_generation"],
+                                            override_model=rescue_model
+                                        )
+                                    else:
+                                        # Default "fix": patch the broken code
+                                        fixed_code, fix_usage = self.llm.fix_diagram_code(
+                                            current_code, str(e), override_model=rescue_model
+                                        )
+                                    
                                     # Track rescue cost separately
                                     self._update_cost(cost_tracker, fix_usage, rescue_model, is_rescue=True)
                                     current_code = fixed_code
+                                    
+                                    # Apply normalization to rescue-generated code too
+                                    if self.normalize_mermaid:
+                                        current_code = normalize_mermaid_code(current_code)
                                     
                                     # Try rendering with rescue fix
                                     self.diagram_gen.render(current_code, image_path)
@@ -180,7 +241,7 @@ class ExperimentRunner:
             # Update Cost (Vision Model)
             self._update_cost(cost_tracker, vision_usage, self.config["models"]["vision_model"])
             
-            # Record step (include usage for granular analysis if needed)
+            # Record step (include usage and rescue metadata)
             trajectory.append({
                 "iteration": i,
                 "prompt": next_prompt,
@@ -189,7 +250,8 @@ class ExperimentRunner:
                 "usage": {
                     "text_gen": text_usage,
                     "vision_ext": vision_usage
-                }
+                },
+                **rescue_meta  # rescue_invoked, rescue_strategy, rescue_attempts
             })
             
             # Update for next loop

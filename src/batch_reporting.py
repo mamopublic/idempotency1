@@ -83,17 +83,27 @@ def generate_batch_report(batch_dir, config):
     sem_stability = []
     vis_stability = []
     
+    sem_intra_stability = []  # iter 1 → last (intra-loop)
+    vis_intra_stability = []
+
     for r in runs:
         # Re-derive stats or use pre-calculated? 
         # Calculating simple stats from series/matrices
         m = r["metrics"]
         
-        # Stability (First-Last)
+        # Stability (Seed-to-Last: matrix[0][-1])
         if m.get("semantic_matrix"):
             sem_stability.append(m["semantic_matrix"][0][-1])
         if m.get("visual_matrix") and len(m["visual_matrix"]) > 1:
             # Vis matrix 1st image is at index 1 (Iter 1)
             vis_stability.append(m["visual_matrix"][1][-1])
+
+        # Intra-loop Stability (Iter 1-to-Last: matrix[1][-1])
+        # Removes seed style gap; measures stability of the VLM register itself
+        if m.get("semantic_matrix") and len(m["semantic_matrix"]) > 1:
+            sem_intra_stability.append(m["semantic_matrix"][1][-1])
+        if m.get("visual_matrix") and len(m["visual_matrix"]) > 2:
+            vis_intra_stability.append(m["visual_matrix"][2][-1])
 
         # Convergence (>0.95 for first time) purely from series
         def find_conv(key):
@@ -109,8 +119,12 @@ def generate_batch_report(batch_dir, config):
     lines.append("### Aggregate Statistics")
     lines.append("| Metric | Mean | Min | Max |")
     lines.append("|---|---|---|---|")
-    lines.append(f"| **Semantic Stability** (First-Last) | {np.mean(sem_stability):.3f} | {np.min(sem_stability):.3f} | {np.max(sem_stability):.3f} |")
-    lines.append(f"| **Visual Stability** (First-Last) | {np.mean(vis_stability):.3f} | {np.min(vis_stability):.3f} | {np.max(vis_stability):.3f} |")
+    lines.append(f"| **Semantic Stability** — Seed→Last (style gap) | {np.mean(sem_stability):.3f} | {np.min(sem_stability):.3f} | {np.max(sem_stability):.3f} |")
+    if sem_intra_stability:
+        lines.append(f"| **Semantic Stability** — Iter 1→Last (intra-loop) | {np.mean(sem_intra_stability):.3f} | {np.min(sem_intra_stability):.3f} | {np.max(sem_intra_stability):.3f} |")
+    lines.append(f"| **Visual Stability** — First Image→Last | {np.mean(vis_stability):.3f} | {np.min(vis_stability):.3f} | {np.max(vis_stability):.3f} |")
+    if vis_intra_stability:
+        lines.append(f"| **Visual Stability** — Iter 2→Last (intra-loop) | {np.mean(vis_intra_stability):.3f} | {np.min(vis_intra_stability):.3f} | {np.max(vis_intra_stability):.3f} |")
     lines.append(f"| **Semantic Convergence** (Step) | {np.mean(sem_conv_steps):.1f} | {np.min(sem_conv_steps)} | {np.max(sem_conv_steps)} |")
     lines.append(f"| **Visual Convergence** (Step) | {np.mean(vis_conv_steps):.1f} | {np.min(vis_conv_steps)} | {np.max(vis_conv_steps)} |")
     lines.append(f"| **Total Cost** | ${total_cost:.4f} (Avg: ${avg_cost:.4f}/run) | - | - |")

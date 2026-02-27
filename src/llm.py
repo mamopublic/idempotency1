@@ -23,12 +23,17 @@ class OpenRouterClient:
         self.text_temp = params.get("text_temperature", 0.0)
         self.vision_temp = params.get("vision_temperature", 0.7)
 
-    def generate_diagram_code(self, prompt, system_prompt):
+    def generate_diagram_code(self, prompt, system_prompt, override_model=None):
         """Generates Mermaid code from a text prompt.
+        Args:
+            prompt: The user prompt describing the diagram
+            system_prompt: The system prompt for diagram generation
+            override_model: Optional model override (e.g., rescue model for regenerate strategy)
         Returns: (content, usage)
         """
+        model_to_use = override_model if override_model else self.text_model
         response = self.client.chat.completions.create(
-            model=self.text_model,
+            model=model_to_use,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}

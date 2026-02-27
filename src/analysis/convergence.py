@@ -44,6 +44,15 @@ def plot_batch_dashboard(batch_dir):
             return 0.0
         return matrix[start_idx][-1]
 
+    # Helper to get SECOND vs last (intra-loop stability: first VLM output vs final output)
+    def get_second_last(matrix, is_visual=False):
+        # Semantic: Compare 1 (first LLM-output prompt) vs -1 (last)
+        # Visual:   Compare 2 (second image) vs -1 (last)
+        start_idx = 2 if is_visual else 1
+        if not matrix or len(matrix) <= start_idx:
+            return 0.0
+        return matrix[start_idx][-1]
+
     # --- Prepare Plot Data ---
     sem_evo = [get_series("semantic_sim_prev", d["series"]) for d in data]
     vis_evo = [get_series("visual_sim_prev", d["series"]) for d in data]
@@ -54,6 +63,9 @@ def plot_batch_dashboard(batch_dir):
     
     sem_fl = [get_first_last(d["semantic_matrix"], False) for d in data]
     vis_fl = [get_first_last(d["visual_matrix"], True) for d in data]
+
+    sem_sl = [get_second_last(d["semantic_matrix"], False) for d in data]
+    vis_sl = [get_second_last(d["visual_matrix"], True) for d in data]
 
     # Convergence (Iter > 0.95)
     def get_convergence(series):
@@ -68,13 +80,12 @@ def plot_batch_dashboard(batch_dir):
 
     # --- Generate Plots ---
     
-    def create_figure(metric_name, evolutions, convergences, first_lasts):
+    def create_figure(metric_name, evolutions, convergences, first_lasts, second_lasts=None):
         fig, axes = plt.subplots(1, 3, figsize=(24, 6))
         
         # 1. Evolution (Line Plot)
         ax = axes[0]
         for i, series in enumerate(evolutions):
-            # Pad or truncate to match length? Usually just plot
             iterations = range(1, len(series) + 1)
             ax.plot(iterations, series, marker='o', label=run_names[i])
         
@@ -87,32 +98,40 @@ def plot_batch_dashboard(batch_dir):
         
         # 2. Convergence (Bar Plot)
         ax = axes[1]
-        x = range(len(run_names))
+        x = np.arange(len(run_names))
         ax.bar(x, convergences, color='skyblue')
         ax.set_xticks(x)
         ax.set_xticklabels(run_names, rotation=45, ha='right')
         ax.set_title("Convergence Speed (Iter > 0.95)")
         ax.set_ylabel("Iteration")
         
-        # 3. First vs Last (Bar Plot)
+        # 3. Stability Bar Chart (grouped when second_lasts is provided)
         ax = axes[2]
-        ax.bar(x, first_lasts, color='lightgreen')
+        if second_lasts is not None:
+            # Grouped bar: seed-to-last (dark green) + loop-to-last (light green)
+            width = 0.38
+            bars1 = ax.bar(x - width / 2, first_lasts,  width, color='#2ecc71', label='Seed → Last (style gap)')
+            bars2 = ax.bar(x + width / 2, second_lasts, width, color='#a8e6cf', label='Iter 1 → Last (intra-loop)')
+            ax.legend(fontsize=8)
+            ax.set_title(f"Stability: {metric_name}\n(seed→last vs iter1→last)")
+        else:
+            ax.bar(x, first_lasts, color='lightgreen')
+            ax.set_title(f"Stability: First vs Last {metric_name}")
         ax.set_xticks(x)
         ax.set_xticklabels(run_names, rotation=45, ha='right')
-        ax.set_title(f"Stability: First vs Last {metric_name}")
         ax.set_ylabel("Similarity")
         ax.set_ylim(0, 1.1)
         
         plt.tight_layout()
         return fig
 
-    # Semantic Dashboard
-    fig_sem = create_figure("Semantic", sem_evo, sem_conv, sem_fl)
+    # Semantic Dashboard — pass second_lasts to show grouped stability bars
+    fig_sem = create_figure("Semantic", sem_evo, sem_conv, sem_fl, second_lasts=sem_sl)
     fig_sem.savefig(os.path.join(batch_dir, "batch_dashboard_p1_semantic.png"))
     plt.close(fig_sem)
     
-    # Visual Dashboard
-    fig_vis = create_figure("Visual", vis_evo, vis_conv, vis_fl)
+    # Visual Dashboard — pass second_lasts to show grouped stability bars
+    fig_vis = create_figure("Visual", vis_evo, vis_conv, vis_fl, second_lasts=vis_sl)
     fig_vis.savefig(os.path.join(batch_dir, "batch_dashboard_p1_visual.png"))
     plt.close(fig_vis)
     

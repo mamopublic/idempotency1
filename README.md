@@ -16,36 +16,54 @@ Our core research objective is to determine if concepts in latent space possess 
 
 ## Preliminary Findings
 
-### Observed Behavior: Gradual Stabilization Without Fixed-Point Attractors
+### Observed Behavior: Register Shift at the Bottleneck, Structural Stability Within the Loop
 
-Based on temperature sweep experiments (n=108, spanning vision temperatures 0.1-1.0):
+Based on two replicated temperature sweep experiments (n=108 each, spanning vision temperatures 0.1–1.0):
 
-**Key Results:**
-- **Visual representations stabilize rapidly** (mean: 2.1 steps, 96.5% first-last similarity)
-- **Semantic descriptions drift longer** (mean: 26.8 steps, 56.2% first-last similarity)  
-- **No evidence of discrete attractor basins** - concepts exhibit continuous drift rather than convergence to fixed points
-- **Temperature independence**: High vision temperature (1.0) shows similar stability patterns to low (0.1)
+**Key Results (sweep `vision_sweep_20260225_205550`, 108 runs, 30 iterations each):**
 
-### Theoretical Implications
+| Metric | Mean | Min | Max |
+|---|---|---|---|
+| **Semantic stability — seed→last** (style gap) | 56.9% | 35.9% | 73.2% |
+| **Semantic stability — iter 1→last** (intra-loop) | **80.4%** | 49.4% | 100% |
+| **Visual stability — iter 1→last** | **97.3%** | 63.0% | 100% |
 
-1. **Lossy Compression Dynamics**: The vision→text bottleneck demonstrates continuous information loss rather than convergence to canonical forms. The system acts as a **progressive filter**, not a **point attractor**.
+**Interpretation — there are two phenomena at play, not one:**
 
-2. **Structural vs. Stochastic Compression**: Temperature independence suggests compression is driven by the architectural constraints of the feedback loop itself, not by model randomness.
+1. **Register shift at the bottleneck (~57% seed→last)**: The ~43% gap between the human-written seed and the final output is *not* continuous semantic drift. It is a one-time, irreversible **style transformation** that happens at iteration 1, when the VLM first re-describes the diagram in its own verbose register (e.g., "a pink rectangle labelled..."). The LLM generating Mermaid from this VLM output then compresses back to the same structural diagram, so the **Mermaid code converges** even though the *text prompts* remain stylistically distant from the seed.
 
-3. **Research Question Status**:
-   - ❌ **Strong attractors** (rejected) - No evidence of fixed-point convergence
-   - ❌ **Limit cycles** (not observed) - No oscillation between discrete states  
-   - ✅ **Continuous semantic drift** - Concepts exhibit bounded wandering in semantic space
+2. **Intra-loop stability (~80% iter 1→last)**: Once the system is in the VLM's output register, it is considerably more stable. Step-by-step semantic similarity between consecutive VLM descriptions sits at 0.85–0.98; the LLM consistently recovers the same structural diagram from these descriptions. The loop has **found a structural attractor** — not in the seed's vocabulary, but in the VLM's idiomatic representation of the structure.
+
+3. **Visual representations are highly stable (97.3%)**: The rendered diagram changes very little after the first few iterations, regardless of text prompt variance.
+
+**Temperature effect** (mild, contrary to initial hypothesis):
+
+| T | Semantic intra-loop |
+|---|---|
+| 0.1 | 85.5% |
+| 0.4 | 81.1% |
+| 0.7 | 79.0% |
+| 1.0 | 75.8% |
+
+Higher vision temperature reduces intra-loop semantic stability by ~10 percentage points across the range. This is real but modest; structural convergence (Mermaid topology) remains consistent across all temperatures.
+
+**Replication note**: A second sweep run with Mermaid cosmetics normalization (stripping whitespace/style from `.mmd` files before rendering) produced nearly identical aggregate numbers, confirming the structural attractor is driven by LLM topology compression, not cosmetic code features.
+
+### Revised Research Question Status
+
+- ✅ **Structural attractor found** — The LLM reliably maps semantically equivalent VLM descriptions back to the same Mermaid topology, acting as a topological compressor.
+- ✅ **Register shift at the bottleneck** — The VLM induces a one-time, stable style transform from terse human seed to verbose visual narration.
+- ❌ **Fixed-point in prompt space** (not observed) — The VLM's text output is never identical to the human seed; seed→last similarity (~57%) reflects a permanent vocabulary gap, not ongoing drift.
+- ❌ **Strong limit cycles** (not observed) — The system does not oscillate discretely; it wanders within a bounded region of the VLM's output register.
 
 ### Significance
 
-**The absence of attractors is itself a finding**: Multimodal iterative loops may not "crystallize" concepts as hypothesized, but rather exhibit **controlled drift** within bounded regions of semantic space. This has implications for:
+The loop is best described as a **two-stage compression**: a one-time register normalization (seed → VLM style) followed by ongoing structural stabilization (VLM style → Mermaid topology). The "irreducible kernel" is the diagram's topological skeleton — the set of nodes and edges — which survives every cycle regardless of how the VLM phrases its description.
 
-- **Retrieval-Augmented Generation**: Repeated reformulation may gradually degrade query semantics
-- **Agentic Workflows**: Multi-step reasoning chains may experience semantic drift proportional to chain length
-- **Prompt Engineering**: "Canonical" prompt forms may not exist in latent space as discrete attractors
-
-This work provides quantitative evidence that multimodal transformations are inherently **lossy and non-convergent**, challenging assumptions about semantic stability in LLM systems.
+Implications:
+- **Retrieval-Augmented Generation**: A single prompt-to-image-to-prompt cycle changes phrasing significantly (~43% style shift), but subsequent cycles are relatively stable. The first reformulation is the dangerous one.
+- **Agentic Workflows**: Multi-step reasoning chains may undergo a rapid initial style normalization rather than proportional drift — worth measuring at step 1 specifically.
+- **Prompt Engineering**: Structural invariants (topology of a diagram, entity relationships) appear to have genuine attractor basins; surface phrasing does not.
 
 ## Getting Started
 
@@ -108,8 +126,8 @@ The repository includes specialized tools for performing controlled experiments:
 See **[examples/sample_sweep/](examples/sample_sweep/)** for a complete example temperature sweep experiment demonstrating:
 
 - **Cross-temperature analysis**: 108 experiments (27 prompts × 4 temperatures)
-- **Visual vs. semantic stability patterns**: Rapid visual convergence (2.1 steps) vs. prolonged semantic drift (26.8 steps)
-- **Temperature independence**: Similar patterns across temperature range 0.1-1.0
+- **Two-stage compression**: register shift at iteration 1 (seed→VLM style, ~57% similarity), then intra-loop stability (iter 1→last, ~80%); visual stability stays high throughout (~97%)
+- **Mild temperature effect**: semantic intra-loop stability decreases from 85.5% (T=0.1) to 75.8% (T=1.0); visual topology remains stable across all temperatures
 - **Complete data formats**: Full trajectory.json and metrics.json examples for reproducibility
 
 The example includes all visualizations, reports (MD + PDF), and one complete trajectory showcasing the experimental methodology.
