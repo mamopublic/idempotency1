@@ -37,14 +37,22 @@ def main():
         print(f"Error: Directory not found: {sweep_dir}")
         sys.exit(1)
 
-    # Load config (try to load run_config.json from first exp or fall back to default)
-    # Actually, we should probably use the project config.yaml but ensure ball_window_size is set?
-    # Or load config.yaml and let user defaults apply.
+    # Load config: prefer a config.yaml saved alongside the sweep (for provenance),
+    # then fall back to the project default config/config.yaml.
+    sweep_config = os.path.join(sweep_dir, "config.yaml")
+    if os.path.exists(sweep_config):
+        config_path = sweep_config
+        print(f"Using sweep-local config: {sweep_config}")
+    else:
+        config_path = "config/config.yaml"
+        print(f"No sweep-local config found; using project default: {config_path}")
+
     try:
-        config = load_config("config/config.yaml")
-        print(f"Loaded config. Using ball_window_size={config['experiment'].get('ball_window_size', 10)}")
+        config = load_config(config_path)
+        print(f"Loaded config. normalize_mermaid={config['experiment'].get('normalize_mermaid', False)}, "
+              f"ball_window_size={config['experiment'].get('ball_window_size', 10)}")
     except Exception as e:
-        print(f"Warning: Could not load config.yaml: {e}")
+        print(f"Warning: Could not load config: {e}")
         return
 
     analyzer = ExperimentAnalyzer(config)

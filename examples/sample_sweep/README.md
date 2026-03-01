@@ -30,21 +30,22 @@ sample_sweep/
 
 ## Key Findings
 
-This experiment demonstrates the core research findings:
+This experiment illustrates the core research findings:
 
-### Visual vs. Semantic Stability
-- **Visual representations stabilize rapidly**: Mean convergence at 2.1 steps with 96.5% first-last similarity
-- **Semantic descriptions drift longer**: Mean convergence at 26.8 steps with 56.2% first-last similarity
-- **No discrete attractor basins**: Concepts exhibit continuous drift rather than fixed-point convergence
+### Two-Stage Compression: Register Shift + Structural Attractor
+- **Visual representations are highly stable**: 96.5% first-last similarity, converging within 2–3 steps
+- **Seed→last semantic gap (~57%)**: The human-written terse seed and the VLM-generated output are never very similar — but this is a *one-time register shift* at iteration 1 (VLM translates the diagram into its own verbose structural narration), not continuous drift
+- **Intra-loop stability (~80%)**: Once in the VLM's register, the loop is considerably more stable; consecutive step similarity sits at 0.85–0.98
+- **Structural attractor found**: The LLM reliably maps semantically varied VLM descriptions back to the same Mermaid topology — it acts as a topological compressor
 
 ### Temperature Independence
-- High vision temperature (1.0) shows similar stability patterns to low temperature (0.1)
-- Suggests compression is driven by architectural constraints, not model randomness
+- High vision temperature (1.0) shows similar structural stability to low temperature (0.1)
+- Suggests the structural attractor is driven by the LLM's topology compression, not by model randomness
 
 ### Implications
-- Multimodal loops demonstrate **controlled drift** within bounded semantic regions
-- Challenges assumptions about semantic stability in LLM systems
-- Relevant for RAG, agentic workflows, and prompt engineering
+- Multimodal loops normalize into a **structural attractor**: the irreducible topological skeleton (nodes and edges) survives every cycle
+- The first reformulation (seed → VLM description) is the largest discontinuity — subsequent cycles are relatively stable
+- Relevant for RAG, agentic workflows, and prompt engineering: measure step 1 specifically
 
 See `completion_analysis.md` for full cross-temperature analysis and `batch_report.pdf` for detailed metrics.
 
@@ -71,10 +72,10 @@ To reproduce this experiment:
 
 ```bash
 cd idempotency1
-python tools/run_sweep.py
+python tools/run_sweep.py config/config_standard.yaml
 ```
 
-This will create a new sweep with current date/time in `experiments/`.
+This will create a new sweep (named `vision_sweep_<timestamp>_standard/`) in `experiments/`. The config file determines prompt style and normalization settings — see `config/` for the full 2×2 experimental matrix.
 
 To regenerate just the reports from existing data:
 

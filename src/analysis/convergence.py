@@ -60,6 +60,7 @@ def plot_batch_dashboard(batch_dir):
     sem_dist = [get_series("semantic_distance_prev", d["series"]) for d in data]
     vis_dist = [get_series("visual_distance_prev", d["series"]) for d in data]
     cm_dist = [get_series("cross_modal_distance", d["series"]) for d in data]
+    mmd_sim = [get_series("mmd_text_sim_prev", d["series"]) for d in data]
     
     sem_fl = [get_first_last(d["semantic_matrix"], False) for d in data]
     vis_fl = [get_first_last(d["visual_matrix"], True) for d in data]
@@ -135,8 +136,8 @@ def plot_batch_dashboard(batch_dir):
     fig_vis.savefig(os.path.join(batch_dir, "batch_dashboard_p1_visual.png"))
     plt.close(fig_vis)
     
-    # Distances Dashboard
-    fig_dist, axes = plt.subplots(1, 3, figsize=(24, 6))
+    # Distances + MMD Dashboard (4 panels)
+    fig_dist, axes = plt.subplots(1, 4, figsize=(32, 6))
     
     # 1. Semantic Distances
     ax = axes[0]
@@ -147,7 +148,7 @@ def plot_batch_dashboard(batch_dir):
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Distance (1 - Sim)")
     ax.set_ylim(0, 1.0)
-    ax.legend()
+    ax.legend(fontsize=7)
     ax.grid(True, alpha=0.3)
     
     # 2. Visual Distances
@@ -159,7 +160,7 @@ def plot_batch_dashboard(batch_dir):
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Distance (1 - Sim)")
     ax.set_ylim(0, 1.0)
-    ax.legend()
+    ax.legend(fontsize=7)
     ax.grid(True, alpha=0.3)
     
     # 3. Cross-Modal Distances
@@ -171,10 +172,54 @@ def plot_batch_dashboard(batch_dir):
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Distance (1 - Sim)")
     ax.set_ylim(0, 1.0)
-    ax.legend()
+    ax.legend(fontsize=7)
     ax.grid(True, alpha=0.3)
     
-    fig_dist.suptitle("Embedding Distances Analysis")
+    # 4. Mermaid Code Similarity — Ribbon Plot (median + IQR + min/max + outlier overlay)
+    ax = axes[3]
+    valid_mmd = [(run_names[i], s) for i, s in enumerate(mmd_sim) if any(v > 0 for v in s)]
+    if valid_mmd:
+        # Align all series to the same length (use the min length)
+        min_len = min(len(s) for _, s in valid_mmd)
+        arr = np.array([[v for v in s[:min_len]] for _, s in valid_mmd])  # shape: (n_runs, n_iters)
+        iters = np.arange(1, min_len + 1)
+
+        median = np.median(arr, axis=0)
+        q1     = np.percentile(arr, 25, axis=0)
+        q3     = np.percentile(arr, 75, axis=0)
+        mn     = np.min(arr, axis=0)
+        mx     = np.max(arr, axis=0)
+
+        # Outer band (min–max)
+        ax.fill_between(iters, mn, mx, alpha=0.12, color='steelblue', label='Min–Max')
+        # IQR band
+        ax.fill_between(iters, q1, q3, alpha=0.30, color='steelblue', label='Q1–Q3')
+        # Median line
+        ax.plot(iters, median, color='steelblue', linewidth=2, label='Median')
+
+        # Overlay "wanderer" runs whose mean < 0.70 as thin labeled lines
+        OUTLIER_THRESH = 0.70
+        outlier_colors = plt.cm.tab10(np.linspace(0, 1, 10))
+        oc = 0
+        for name, s in valid_mmd:
+            run_mean = np.mean([v for v in s if v > 0]) if any(v > 0 for v in s) else 1.0
+            if run_mean < OUTLIER_THRESH:
+                ax.plot(iters, s[:min_len], linewidth=1, linestyle='--',
+                        color=outlier_colors[oc % 10], alpha=0.8, label=f'{name} ({run_mean:.2f})')
+                oc += 1
+
+        ax.set_title("Mermaid Code Similarity (Step vs Prev)\nRibbon = median ± IQR; dashed = outliers (<0.70 mean)")
+        ax.legend(fontsize=7, loc='lower right')
+    else:
+        ax.text(0.5, 0.5, "No MMD data\n(run reanalyze_sweep.py)",
+                ha='center', va='center', transform=ax.transAxes, fontsize=10, color='gray')
+        ax.set_title("Mermaid Code Similarity (Step vs Prev)")
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("Similarity")
+    ax.set_ylim(0, 1.1)
+    ax.grid(True, alpha=0.3)
+    
+    fig_dist.suptitle("Embedding Distances & Code Similarity Analysis")
     plt.tight_layout()
     fig_dist.savefig(os.path.join(batch_dir, "batch_dashboard_p1_distances.png"))
     plt.close(fig_dist)

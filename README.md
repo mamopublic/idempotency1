@@ -49,12 +49,40 @@ Higher vision temperature reduces intra-loop semantic stability by ~10 percentag
 
 **Replication note**: A second sweep run with Mermaid cosmetics normalization (stripping whitespace/style from `.mmd` files before rendering) produced nearly identical aggregate numbers, confirming the structural attractor is driven by LLM topology compression, not cosmetic code features.
 
+### Prompt Constraint Experiment: Why Tight Prompts Don't Close the Gap
+
+We ran a third sweep (`vision_sweep_20260228_162309_tight`) with **tight system prompts** for both models:
+- **Tight VLM prompt**: instructs the vision model to describe *only* the logical structure — every node and directed connection — and explicitly forbids describing colors, shapes, border widths, or visual styling.
+- **Tight LLM prompt**: constrains the text model to `graph TD` (not `flowchart`), a single `classDef nodeStyle`, and strict naming conventions to reduce cosmetic code variance.
+
+**Representative results (prompt_1, T=0.1):**
+
+| Metric | Tight | Standard |
+|---|---|---|
+| Seed→last similarity | **0.668** | 0.578 |
+| Iter 1→last (intra-loop) | **0.962** | 0.898 |
+| Convergence step (≥0.95) | **2** | 3 |
+
+Tight prompts give a real but modest improvement: seed→last rises by ~9 percentage points and convergence is one step earlier. However, the **fundamental gap (~40%) persists**, and the tight trajectory reveals an unexpected side effect — the system sometimes hits **perfect identity** (similarity = 1.000) then *oscillates back* to 0.858 on the next step. The narrow constraint space creates a small number of discrete valid representations the LLM alternates between, rather than a smooth convergent trajectory.
+
+**Why tightening alone is insufficient:**
+
+The main source of variance is not cosmetic vocabulary ("pink rounded rectangle") — it is **structural paraphrase granularity**: even constrained to pure structure, the VLM has many equally valid ways to express the same topology:
+- Edge direction: "A calls B" vs. "B receives requests from A"
+- Node ordering: traversal order of descriptions varies by iteration
+- Relationship explicitness: some edges named, others implied, shifting per cycle
+
+These are structurally equivalent descriptions but semantically distinguishable by the embedding model. Eliminating styling words does not eliminate paraphrasing freedom, and the ~40% seed→last gap is largely *irreducible paraphrase distance* between the human's terse seed ("A simple user authentication flow") and the VLM's elaborated structural register — not an artifact of style words.
+
+**Conclusion**: Prompt tightening is a useful marginal improvement for cosmetic-noise-sensitive prompts, but it does not change the architectural finding. The register shift at the bottleneck is driven by the vocabulary mismatch between human-authored terse seeds and VLM-generated verbose structural narration — a property of the cross-modal bottleneck, not of the prompt template.
+
 ### Revised Research Question Status
 
 - ✅ **Structural attractor found** — The LLM reliably maps semantically equivalent VLM descriptions back to the same Mermaid topology, acting as a topological compressor.
 - ✅ **Register shift at the bottleneck** — The VLM induces a one-time, stable style transform from terse human seed to verbose visual narration.
 - ❌ **Fixed-point in prompt space** (not observed) — The VLM's text output is never identical to the human seed; seed→last similarity (~57%) reflects a permanent vocabulary gap, not ongoing drift.
 - ❌ **Strong limit cycles** (not observed) — The system does not oscillate discretely; it wanders within a bounded region of the VLM's output register.
+- ⚠️ **Prompt tightening** (marginal improvement, insufficient) — Tight VLM/LLM prompts improve seed→last similarity by ~5–9% and shorten convergence by ~1 step, but the fundamental ~40% register gap persists. The irreducible noise source is structural paraphrase granularity (phrasing order, edge direction, relationship explicitness), not cosmetic style vocabulary. Tight constraints can even introduce micro-oscillations by concentrating valid representations into a small discrete set.
 
 ### Significance
 
@@ -96,7 +124,7 @@ Implications:
 Run a suite of experiments defined in the prompts configuration. This is the primary method for gathering statistical data.
 
 ```bash
-python main.py --batch config/prompts/batch_prompts.txt
+python main.py --batch config/prompts/batch_stage2_robust.txt --config config/config_standard.yaml
 ```
 
 **Output**: Creates a structured dataset in `experiments/` containing:
@@ -116,8 +144,9 @@ python main.py --prompt "A distributed payment gateway architecture with sharded
 
 The repository includes specialized tools for performing controlled experiments:
 
-- **Hyperparameter Sweeps**: Vary models and temperatures to test sensitivity.
-    - `python tools/run_sweep.py`
+- **Hyperparameter Sweeps**: Vary temperatures across the 2×2 experimental matrix (prompt style × normalization).
+    - `python tools/run_sweep.py config/config_standard.yaml`
+    - `python tools/run_sweep.py config/config_tight_normalize.yaml`
 - **Dry Run**: Verify the pipeline integrity before long-running experiments.
     - `python tools/run_dry_run.py`
 

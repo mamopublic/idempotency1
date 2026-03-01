@@ -85,6 +85,7 @@ def generate_batch_report(batch_dir, config):
     
     sem_intra_stability = []  # iter 1 → last (intra-loop)
     vis_intra_stability = []
+    mmd_step_sim = []         # mean mmd_text_sim_prev across all steps > 0
 
     for r in runs:
         # Re-derive stats or use pre-calculated? 
@@ -116,6 +117,11 @@ def generate_batch_report(batch_dir, config):
         sem_conv_steps.append(find_conv("semantic_sim_prev"))
         vis_conv_steps.append(find_conv("visual_sim_prev"))
 
+        # MMD code similarity: mean step-by-step similarity of Mermaid source (iter > 0)
+        mmd_vals = [s.get("mmd_text_sim_prev", 0.0) for s in m.get("series", []) if s.get("iteration", 0) > 0 and s.get("mmd_text_sim_prev", 0.0) > 0]
+        if mmd_vals:
+            mmd_step_sim.append(sum(mmd_vals) / len(mmd_vals))
+
     lines.append("### Aggregate Statistics")
     lines.append("| Metric | Mean | Min | Max |")
     lines.append("|---|---|---|---|")
@@ -127,6 +133,8 @@ def generate_batch_report(batch_dir, config):
         lines.append(f"| **Visual Stability** — Iter 2→Last (intra-loop) | {np.mean(vis_intra_stability):.3f} | {np.min(vis_intra_stability):.3f} | {np.max(vis_intra_stability):.3f} |")
     lines.append(f"| **Semantic Convergence** (Step) | {np.mean(sem_conv_steps):.1f} | {np.min(sem_conv_steps)} | {np.max(sem_conv_steps)} |")
     lines.append(f"| **Visual Convergence** (Step) | {np.mean(vis_conv_steps):.1f} | {np.min(vis_conv_steps)} | {np.max(vis_conv_steps)} |")
+    if mmd_step_sim:
+        lines.append(f"| **MMD Code Similarity** (mean step-by-step) | {np.mean(mmd_step_sim):.3f} | {np.min(mmd_step_sim):.3f} | {np.max(mmd_step_sim):.3f} |")
     lines.append(f"| **Total Cost** | ${total_cost:.4f} (Avg: ${avg_cost:.4f}/run) | - | - |")
     lines.append("")
     
@@ -155,14 +163,9 @@ def generate_batch_report(batch_dir, config):
     lines.append("![Visual Window Radius](batch_dashboard_p1_window_radius_visual.png)")
     lines.append("")
     lines.append("#### Semantic Entropy Trajectories")
-    lines.append("![Text Trajectories P1](semantic_entropy_text_trajectories.png)")
+    lines.append("![Text Trajectories](semantic_entropy_text_trajectories_p2.png)")
     lines.append("")
-    lines.append("![Image Trajectories P1](semantic_entropy_image_trajectories.png)")
-    lines.append("")
-    lines.append("#### Semantic Entropy Trajectories (Problem 2)")
-    lines.append("![Text Trajectories P2](semantic_entropy_text_trajectories_p2.png)")
-    lines.append("")
-    lines.append("![Image Trajectories P2](semantic_entropy_image_trajectories_p2.png)")
+    lines.append("![Image Trajectories](semantic_entropy_image_trajectories_p2.png)")
     lines.append("")
 
     # 3. Individual Experiment Summary

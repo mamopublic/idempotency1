@@ -1,0 +1,97 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Experimental condition: STANDARD prompts + Mermaid NORMALIZATION
+# Reproduces: vision_sweep_20260225_205550 (Feb 25 sweep).
+# Normalization strips cosmetic code variance; prompts are unchanged (verbose).
+# ─────────────────────────────────────────────────────────────────────────────
+experiment:
+  iterations: 30
+  output_dir: "experiments"
+  save_artifacts: true
+  ball_window_size: 10
+  normalize_mermaid: true    # ON: cosmetic whitespace/style stripped from .mmd
+
+models:
+  generation_params:
+    text_temperature: 0.1
+    vision_temperature: 0.7
+  text_model: "openai/gpt-4o-mini"
+  vision_model: "google/gemini-2.0-flash-001"
+  rescue_model: "openai/gpt-4o"
+  rescue_retries: 3
+  rescue_strategy: "fix"
+  embedding_model: "google/siglip-so400m-patch14-384"
+
+semantic_entropy:
+  n_clusters: 16
+  tau: 0.1
+  random_state: 42
+  embedding_model: "google/siglip-so400m-patch14-384"
+
+mermaid:
+  executable_path: "npx"
+
+prompts:
+  use_tight_prompts: false   # OFF: verbose VLM description, full styling instructions
+
+system_prompts:
+  diagram_generation: |
+    You are an expert software architect and Mermaid.js specialist.
+    Your task is to generate a valid Mermaid.js diagram based on the user's description.
+    
+    RULES:
+    1. Return ONLY the Mermaid code. No markdown code blocks (```mermaid), no explanations, no preamble.
+    2. The code must be syntactically correct and renderable.
+    3. Use the 'graph TD' or 'flowchart TD' type unless specified otherwise.
+    4. Use clear, descriptive node labels.
+    5. Style the nodes to look professional (e.g., using 'classDef').
+    6. Do NOT use reserved keywords (like 'end', 'subgraph', 'click') as class names. Use 'endNode' instead of 'end'.
+
+  vision_extraction: |
+    You are an expert system analyst.
+    Your task is to analyze the provided architecture diagram and write a detailed textual prompt that describes it.
+    
+    RULES:
+    1. The output should be a prompt that, if fed to an architect, would result in this exact diagram.
+    2. Describe every node, connection, and label.
+    3. Capture the logical flow and hierarchy.
+    4. Do NOT mention that you are looking at a diagram or image. Just describe the system.
+    5. Be precise and concise.
+
+tight_system_prompts:
+  diagram_generation: |
+    You are an expert software architect and Mermaid.js specialist.
+    Your task is to generate a valid Mermaid.js diagram based on the user's description.
+    
+    RULES:
+    1. Return ONLY the Mermaid code. No markdown code blocks (```mermaid), no explanations, no preamble.
+    2. The code must be syntactically correct and renderable.
+    3. Use the 'graph TD' type (not 'flowchart').
+    4. Use clear, descriptive node labels.
+    5. Always define exactly one class using classDef with the name 'nodeStyle'.
+       Example: classDef nodeStyle fill:#f9f,stroke:#333,stroke-width:2px;
+       Do NOT add rx, ry, or any other layout properties to classDef.
+    6. Apply the class to all nodes using: class Node1,Node2,... nodeStyle
+    7. Use 'endNode' (lowercase e) instead of the reserved keyword 'end'. Never use 'EndNode' or 'END'.
+    8. Do NOT use reserved keywords (like 'end', 'subgraph', 'click') as node IDs or class names.
+
+  vision_extraction: |
+    You are an expert system analyst.
+    Your task is to analyze the provided architecture diagram and write a structural description.
+    
+    RULES:
+    1. The output should be a prompt that, if fed to an architect, would result in this exact diagram.
+    2. Describe ONLY the logical structure: every node (its name and role), every directed connection, and every edge label.
+    3. Do NOT describe visual styling, colors, shapes, border widths, or layout (rounded corners, etc.).
+    4. Do NOT mention that you are looking at a diagram or image. Just describe the system.
+    5. Be precise and concise. Focus on semantics, not aesthetics.
+
+costs:
+  google/gemini-2.0-flash-001:
+    input: 0.10
+    output: 0.40
+  openai/gpt-4o-mini:
+    input: 0.15
+    output: 0.60
+  openai/gpt-4o:
+    input: 2.50
+    output: 10.00
